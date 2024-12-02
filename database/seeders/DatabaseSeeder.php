@@ -26,7 +26,7 @@ class DatabaseSeeder extends Seeder
         // ]);
 
         //   DB::table('users')->insert([
-        //     'email' => 'user@gmail.com',
+        //     'email' => 'user1@gmail.com',
         //     'role_id' =>2,
         //     'password' => Hash::make('quang123'),
         //     'email_verified_at' => now(),
@@ -34,16 +34,16 @@ class DatabaseSeeder extends Seeder
         //     'updated_at' => now(),
         // ]);
 
-        //   DB::table('user_details')->insert([
-        //     'user_id' => '2',
-        //     'full_name' =>'kien',
-        //     'phone' =>'0332413645',
-        //     'address' =>'Ha noi',
-        //     'dob' =>'2004-09-27',
-        //     'gender' =>'Nam',
-        //     'created_at' => now(),
-        //     'updated_at' => now(),
-        // ]);
+          DB::table('user_details')->insert([
+            'user_id' => '4',
+            'full_name' =>'hưu anh',
+            'phone' =>'0332413645',
+            'address' =>'Ha noi',
+            'dob' =>'2004-09-27',
+            'gender' =>'Nam',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
 
         // DB::table('events')->insert([
         //     'user_id' => 22,
