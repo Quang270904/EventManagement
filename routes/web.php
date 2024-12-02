@@ -1,6 +1,8 @@
 <?php
 
+use App\Http\Controllers\AdminPanel\AdminController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\UserPanel\UserController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -29,3 +31,11 @@ Route::middleware('auth')->group(function () {
 });
 
 require __DIR__.'/auth.php';
+
+Route::middleware(['auth','role:admin'])->group(function () {
+    Route::get('/admin/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
+});
+
+Route::middleware(['auth','role:user'])->group(function () {
+    Route::get('/user/dashboard', [UserController::class, 'index'])->name('user.dashboard');
+});
