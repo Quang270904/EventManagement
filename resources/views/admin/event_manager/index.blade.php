@@ -60,7 +60,7 @@
                     </tbody>
                 </table>
                 <div class="box-footer clearfix">
-                    {{ $allUserDetails->links('vendor.pagination.bootstrap-3') }}
+                    {{ $allUserDetails->links('admin.vendor.pagination.bootstrap-3') }}
                 </div>
             @endif
         </div>

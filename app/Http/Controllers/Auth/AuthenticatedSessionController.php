@@ -34,6 +34,9 @@ class AuthenticatedSessionController extends Controller
         if ($request->user()->role->role_name === 'user') {
             return redirect()->route('user.dashboard');
         }
+        if ($request->user()->role->role_name === 'event_manager') {
+            return redirect()->route('event_manager.dashboard');
+        }
 
         return redirect()->intended(RouteServiceProvider::HOME);
     }

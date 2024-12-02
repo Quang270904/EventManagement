@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AdminPanel\AdminController;
 use App\Http\Controllers\AdminPanel\EventController;
+use App\Http\Controllers\AdminPanel\TicketController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\EventManagerPanel\EventManagerController;
 use App\Http\Controllers\ProfileController;
@@ -55,12 +56,35 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
     Route::post('/eventManager/{id}/delete', [EventManagerController::class, 'deleteEventManager'])->name('admin.eventManager.delete');
 
     Route::get('/event-list', [EventController::class, 'getAllEvent'])->name('admin.event');
+    Route::get('/event/{id}/detail', [EventController::class, 'eventDetail'])->name('admin.event.show');
     Route::get('event/showFormCreate', [EventController::class, 'formCreateEvent'])->name('admin.event.create');
     Route::post('event/create', [EventController::class, 'creatEvent'])->name('admin.event.submit');
     Route::get('/event/{id}/edit', [EventController::class, 'formEditEvent'])->name('admin.event.edit');
     Route::post('/event/{id}/update', [EventController::class, 'updateEvent'])->name('admin.event.update');
     Route::post('/event/{id}/delete', [EventController::class, 'deleteEvent'])->name('admin.event.delete');
 
+
+    Route::get('/ticket-list', [TicketController::class, 'getAllTicket'])->name('admin.ticket');
+    Route::get('event/{id}/showFormCreate', [TicketController::class, 'formCreateTicket'])->name('admin.ticket.create');
+    Route::post('event/{id}/create', [TicketController::class, 'createTicket'])->name('admin.ticket.submit');
+});
+
+// Role  Event_Manager
+Route::middleware(['auth', 'role:event_manager'])->prefix('event_manager')->group(function () {
+    Route::get('/dashboard', [EventManagerController::class, 'index'])->name('event_manager.dashboard');
+
+    Route::get('/event-list', [EventController::class, 'getManagerEvents'])->name('event_manager.event');
+    Route::get('/event/{id}/detail', [EventManagerController::class, 'eventDetail'])->name('event_manager.event.show');
+    Route::get('event/showFormCreate', [EventManagerController::class, 'formCreateEvent'])->name('event_manager.event.create');
+    Route::post('event/create', [EventManagerController::class, 'creatEvent'])->name('event_manager.event.submit');
+    Route::get('/event/{id}/edit', [EventManagerController::class, 'formEditEvent'])->name('event_manager.event.edit');
+    Route::post('/event/{id}/update', [EventManagerController::class, 'updateEvent'])->name('event_manager.event.update');
+    Route::post('/event/{id}/delete', [EventManagerController::class, 'deleteEvent'])->name('event_manager.event.delete');
+
+
+    Route::get('/ticket-list', [TicketController::class, 'getAllTicket'])->name('admin.ticket');
+    Route::get('event/{id}/showFormCreate', [TicketController::class, 'formCreateTicket'])->name('admin.ticket.create');
+    Route::post('event/{id}/create', [TicketController::class, 'createTicket'])->name('admin.ticket.submit');
 });
 
 

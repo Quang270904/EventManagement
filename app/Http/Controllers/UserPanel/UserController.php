@@ -30,34 +30,27 @@ class UserController extends Controller
         $userDetail = $user->userDetail;
         $role = $user->role;
 
-        $roleUser = Role::where('role_name', 'user')->first();
-
-        if (!$roleUser) {
-            $allUserDetails = collect();
-        } else {
-            $allUserDetails = UserDetail::whereHas('user', function ($query) use ($roleUser) {
-                $query->where('role_id', $roleUser->id);
+        $allUserDetails = UserDetail::with('user')
+            ->where(function ($query) use ($search) {
+                if ($search) {
+                    $query->where('full_name', 'like', "%$search%")
+                        ->orWhere('address', 'like', "%$search%")
+                        ->orWhere('phone', 'like', "%$search%");
+                }
             })
-                ->with('user')
-                ->where(function ($query) use ($search) {
-                    if ($search) {
-                        $query->where('full_name', 'like', "%$search%")
-                            ->orWhere('address', 'like', "%$search%")
-                            ->orWhere('phone', 'like', "%$search%");
-                    }
-                })
-                ->paginate(10);
-        }
+            ->paginate(10);
 
         return view('admin.user.index', compact('user', 'role', 'userDetail', 'allUserDetails'));
     }
 
+
     public function showFormCreateUser()
     {
         $user = Auth::user();
+        $roles = Role::all();  
         $userDetail = $user->userDetail;
         $role = $user->role;
-        return view('admin.user.createUser', compact('user', 'userDetail', 'role'));
+        return view('admin.user.createUser', compact('user', 'userDetail', 'role','roles'));
     }
 
     //User
@@ -65,18 +58,12 @@ class UserController extends Controller
     public function createUser(UserRequest $request)
     {
         try {
-
-            $role = Role::firstOrCreate(['role_name' => 'user']);
-
-            if (!$role->id) {
-                Log::error('Role ID not found');
-                return redirect()->route('admin.user.create')->with('error', 'Role not found');
-            }
+            $role = Role::findOrFail($request->role_id);
 
             $user = User::create([
                 'email' => $request->email,
                 'password' => Hash::make($request->password),
-                'role_id' => $role->id,  
+                'role_id' => $role->id,
             ]);
 
             UserDetail::create([
@@ -90,10 +77,10 @@ class UserController extends Controller
                 'updated_at' => now(),
             ]);
 
-            return redirect()->route('admin.user')->with('success',  'Register successfully');
+            return redirect()->route('admin.user')->with('success', 'Register successfully');
         } catch (\Exception $e) {
             Log::error('Error registering user: ' . $e->getMessage());
-            return redirect()->route('admin.user.create')->with('error', 'Register faild');
+            return redirect()->route('admin.user.create')->with('error', 'Register failed');
         }
     }
 

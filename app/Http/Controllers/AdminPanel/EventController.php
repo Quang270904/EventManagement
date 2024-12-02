@@ -38,6 +38,49 @@ class EventController extends Controller
         return view('admin.event.index', compact('user', 'role', 'events', 'userDetail'));
     }
 
+    public function getManagerEvents(Request $request)
+    {
+        $search = $request->input('search');
+        $user = Auth::user();
+        $userDetail = $user->userDetail;
+        $role = $user->role;
+
+        if ($role->role_name != 'event_manager') {
+            return redirect()->route('admin.dashboard')->with('error', 'You are not authorized to view these events');
+        }
+
+        $events = Event::query();
+
+        $events->where('user_id', $user->id);
+
+        if ($search) {
+            $events->where(function ($query) use ($search) {
+                $query->where('name', 'like', '%' . $search . '%')
+                    ->orWhere('description', 'like', '%' . $search . '%')
+                    ->orWhere('location', 'like', '%' . $search . '%');
+            });
+        }
+
+        $events = $events->paginate(10);
+
+        foreach ($events as $event) {
+            $event->start_time = Carbon::parse($event->start_time);
+            $event->end_time = Carbon::parse($event->end_time);
+        }
+
+        return view('event_managers.event.index', compact('user', 'role', 'events', 'userDetail'));
+    }
+
+    public function eventDetail($id)
+    {
+        $user = Auth::user();
+        $userDetail = $user->userDetail;
+        $role = $user->role;
+        $event = Event::findOrFail($id);
+
+        return view('admin.event.event_detail', compact('event', 'user', 'userDetail', 'role'));
+    }
+
     public function formCreateEvent()
     {
         $user = Auth::user();
@@ -50,40 +93,39 @@ class EventController extends Controller
     public function creatEvent(EventRequest $request)
     {
 
-            try {
-                $user = Auth::user();
-            
-                $validated = $request->validated();
-            
-                $imagePath = null;
-                if ($request->hasFile('image')) {
-                    $image = $request->file('image');
-            
-                    Log::info('Image uploaded with MIME type: ' . $image->getClientMimeType());
-                    Log::info('Image uploaded with file name: ' . $image->getClientOriginalName());
-            
-                    $imagePath = $image->store('images', 'public'); 
-            
-                    Log::info('Image stored at path: ' . $imagePath);
-                }
-            
-                $event = Event::create([
-                    'user_id' => $user->id,
-                    'name' => $validated['name'],
-                    'description' => $validated['description'],
-                    'location' => $validated['location'],
-                    'start_time' => Carbon::parse($validated['start_time']),
-                    'end_time' => Carbon::parse($validated['end_time']),
-                    'status' => $validated['status'],
-                    'image' => $imagePath,
-                ]);
-            
-                return redirect()->route('admin.event')->with('success', 'Event created successfully!');
-            } catch (\Exception $e) {
-                Log::error('Error creating event: ' . $e->getMessage());
-                return redirect()->route('admin.event.create')->with('error', 'Failed to create event.');
+        try {
+            $user = Auth::user();
+
+            $validated = $request->validated();
+
+            $imagePath = null;
+            if ($request->hasFile('image')) {
+                $image = $request->file('image');
+
+                Log::info('Image uploaded with MIME type: ' . $image->getClientMimeType());
+                Log::info('Image uploaded with file name: ' . $image->getClientOriginalName());
+
+                $imagePath = $image->store('images', 'public');
+
+                Log::info('Image stored at path: ' . $imagePath);
             }
-            
+
+            $event = Event::create([
+                'user_id' => $user->id,
+                'name' => $validated['name'],
+                'description' => $validated['description'],
+                'location' => $validated['location'],
+                'start_time' => Carbon::parse($validated['start_time']),
+                'end_time' => Carbon::parse($validated['end_time']),
+                'status' => $validated['status'],
+                'image' => $imagePath,
+            ]);
+
+            return redirect()->route('admin.event')->with('success', 'Event created successfully!');
+        } catch (\Exception $e) {
+            Log::error('Error creating event: ' . $e->getMessage());
+            return redirect()->route('admin.event.create')->with('error', 'Failed to create event.');
+        }
     }
 
     public function formEditEvent($id)
@@ -102,17 +144,17 @@ class EventController extends Controller
         try {
             $user = Auth::user();
             $event = Event::findOrFail($id);
-    
+
             $validated = $request->validated();
-    
-            $imagePath = $event->image;  
+
+            $imagePath = $event->image;
             if ($request->hasFile('image')) {
                 if ($event->image && file_exists(public_path('storage/' . $event->image))) {
                     unlink(public_path('storage/' . $event->image));
                 }
-                
+
                 $image = $request->file('image');
-                $imagePath = $image->store('events_images', 'public'); 
+                $imagePath = $image->store('events_images', 'public');
             }
             $event->update([
                 'user_id' => $user->id,
@@ -122,17 +164,15 @@ class EventController extends Controller
                 'start_time' => Carbon::parse($validated['start_time']),
                 'end_time' => Carbon::parse($validated['end_time']),
                 'status' => $validated['status'],
-                'image' => $imagePath, 
+                'image' => $imagePath,
             ]);
-    
+
             return redirect()->route('admin.event')->with('success', 'Event updated successfully!');
         } catch (\Exception $e) {
             Log::error('Error updating event: ' . $e->getMessage());
             return redirect()->route('admin.event.edit', ['id' => $id])->with('error', 'Update failed.');
         }
     }
-    
-
 
     public function deleteEvent($id)
     {

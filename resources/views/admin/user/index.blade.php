@@ -30,6 +30,7 @@
                             <th>Address</th>
                             <th>Email</th>
                             <th>Phone</th>
+                            <th>Role</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -41,6 +42,7 @@
                                 <td>{{ $detail->address }}</td>
                                 <td>{{ $detail->user->email }}</td>
                                 <td>{{ $detail->phone }}</td>
+                                <td>{{ $detail->user->role->role_name ?? 'No role assigned' }}</td> 
                                 <td>
                                     <div class="actions">
                                         <a href="{{ route('admin.user.edit', $detail->user->id) }}"
@@ -57,7 +59,7 @@
                     </tbody>
                 </table>
                 <div class="box-footer clearfix">
-                    {{-- {{ $allUserDetails->links('vendor.pagination.bootstrap-3') }} --}}
+                    {{ $allUserDetails->links('admin.vendor.pagination.bootstrap-3') }}
                 </div>
             @endif
         </div>

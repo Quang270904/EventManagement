@@ -5,10 +5,10 @@
 @section('content')
     <div class="box">
         <div class="box-header">
-            <h3 class="box-title">Management Event</h3>
+            <h3 class="box-title">Management Ticket</h3>
         </div>
         <div class="form-inline pull-left  w-100">
-            <form action="{{ route('admin.event') }}" method="GET" class="form-inline ">
+            <form action="{{ route('admin.ticket') }}" method="GET" class="form-inline ">
                 <div class="input-group">
                     <input type="text" name="search" class="form-control" placeholder="Search..."
                         value="{{ request('search') }}">
@@ -17,24 +17,23 @@
                     </span>
                 </div>
             </form>
-            <a href="{{ route('admin.event.create') }}" class="add btn btn-success ">Create</a>
+            <a href="{{ route('admin.ticket.create') }}" class="add btn btn-success ">Create</a>
         </div>
 
         <div class="box-body">
             @if ($events->isEmpty())
-                <p class="text-center text-danger">Empty List Event</p>
+                <p class="text-center text-danger">Empty List Ticket</p>
             @else
                 <table id="example1" class="table table-bordered table-striped">
                     <thead>
                         <tr>
                             <th>#</th>
-                            <th>Image</th>
+                            <th>Event Name</th>
                             <th>Name</th>
-                            <th>Description</th>
-                            <th>Location</th>
-                            <th>Start Time</th>
-                            <th>End Time</th>
-                            <th>Status</th>
+                            <th>Priece</th>
+                            <th>Ticket_type</th>
+                            <th>Created At</th>
+                            <th>Updated At</th>
                         </tr>
                     </thead>
                     <tbody>

@@ -34,21 +34,16 @@
                     </span>
                 </a>
                 <ul class="treeview-menu">
-                    <li class="active">
-                        <a href="{{ route('admin.user') }}"><i class="fa fa-circle-o"></i>
-                            User
-                        </a>
-                    </li>
                     <li>
-                        <a href="{{ route('admin.event') }}"><i class="fa fa-circle-o"></i>
+                        <a href="{{ route('event_manager.event') }}"><i class="fa fa-circle-o"></i>
                             Event
                         </a>
                     </li>
-                    <li>
+                    {{-- <li>
                         <a href="{{ route('admin.ticket') }}"><i class="fa fa-circle-o"></i>
                             Ticket
                         </a>
-                    </li>
+                    </li> --}}
                 </ul>
             </li>
         </ul>

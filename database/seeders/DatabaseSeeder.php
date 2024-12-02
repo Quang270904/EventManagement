@@ -22,12 +22,12 @@ class DatabaseSeeder extends Seeder
         // ]);
 
         //  DB::table('roles')->insert([
-        //     'role_name' => 'user',
+        //     'role_name' => 'admin',
         // ]);
 
         //   DB::table('users')->insert([
-        //     'email' => 'user1@gmail.com',
-        //     'role_id' =>2,
+        //     'email' => 'admin@gmail.com',
+        //     'role_id' =>1,
         //     'password' => Hash::make('quang123'),
         //     'email_verified_at' => now(),
         //     'created_at' => now(),
@@ -35,8 +35,8 @@ class DatabaseSeeder extends Seeder
         // ]);
 
         //   DB::table('user_details')->insert([
-        //     'user_id' => '4',
-        //     'full_name' =>'hưu anh',
+        //     'user_id' => '1',
+        //     'full_name' =>'doan viet quang',
         //     'phone' =>'0332413645',
         //     'address' =>'Ha noi',
         //     'dob' =>'2004-09-27',
@@ -54,6 +54,14 @@ class DatabaseSeeder extends Seeder
         //     'end_time' => '2024-12-01 14:30:00',
         //     'location' => 'Ha noi',
         //     'status' => 'pending',
+        //     'created_at' => now(),
+        //     'updated_at' => now(),
+        // ]);
+
+        // DB::table('tickets')->insert([
+        //     'event_id' => 1,
+        //     'ticket_type' => 'regular',
+        //     'price' => 23.4,    
         //     'created_at' => now(),
         //     'updated_at' => now(),
         // ]);

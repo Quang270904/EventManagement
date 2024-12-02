@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('name', 255);
             $table->string('image')->nullable();
             $table->text('description');
-            $table->dateTime('start_time');
+            $table->dateTime('start_time'); 
             $table->dateTime('end_time');
             $table->string('location', 255);
             $table->enum('status', ['pending', 'approved ', 'ongoing ', 'completed ']);

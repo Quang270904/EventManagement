@@ -1,6 +1,7 @@
 {{-- Manager Event --}}
 
-@extends('admin.dashboard.home.layout')
+
+@extends('event_managers.dashboard.home.layout')
 
 @section('content')
     <div class="box">
@@ -17,7 +18,7 @@
                     </span>
                 </div>
             </form>
-            <a href="{{ route('admin.event.create') }}" class="add btn btn-success ">Create</a>
+            <a href="{{ route('event_manager.event.create') }}" class="add btn btn-success ">Create</a>
         </div>
 
         <div class="box-body">
@@ -61,7 +62,7 @@
                                     <div class="actions">
                                         <a href="{{ route('admin.event.show', $event->id) }}"
                                             class="btn btn-info btn-sm">Show Details</a>
-                                        <a href="{{ route('admin.event.edit', $event->id) }}"
+                                        <a href="{{ route('event_manager.event.edit', $event->id) }}"
                                             class="btn btn-warning btn-sm">Update</a>
                                         <form action="{{ route('admin.event.delete', $event->id) }}" method="POST"
                                             onsubmit="return confirm('Are you sure you want to delete this event?')">
