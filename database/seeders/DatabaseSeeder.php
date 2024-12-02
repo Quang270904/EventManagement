@@ -34,19 +34,20 @@ class DatabaseSeeder extends Seeder
         //     'updated_at' => now(),
         // ]);
 
-          DB::table('user_details')->insert([
-            'user_id' => '4',
-            'full_name' =>'hưu anh',
-            'phone' =>'0332413645',
-            'address' =>'Ha noi',
-            'dob' =>'2004-09-27',
-            'gender' =>'Nam',
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
+        //   DB::table('user_details')->insert([
+        //     'user_id' => '4',
+        //     'full_name' =>'hưu anh',
+        //     'phone' =>'0332413645',
+        //     'address' =>'Ha noi',
+        //     'dob' =>'2004-09-27',
+        //     'gender' =>'Nam',
+        //     'created_at' => now(),
+        //     'updated_at' => now(),
+        // ]);
 
         // DB::table('events')->insert([
-        //     'user_id' => 22,
+        //     'user_id' => 1,
+        //     'image' => 'sdfsdf',
         //     'name' => 'Su kien A',
         //     'description' => 'su kien noi bat nhat the gioi',
         //     'start_time' => '2024-12-01 14:30:00',

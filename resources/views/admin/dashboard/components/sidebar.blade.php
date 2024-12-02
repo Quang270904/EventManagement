@@ -44,11 +44,11 @@
                             Event Manager
                         </a>
                     </li>
-                    {{-- <li>
-                        <a href="{{ route('auth.dashboard.event') }}"><i class="fa fa-circle-o"></i>
+                    <li>
+                        <a href="{{ route('admin.event') }}"><i class="fa fa-circle-o"></i>
                             Event
                         </a>
-                    </li> --}}
+                    </li>
                 </ul>
             </li>
         </ul>

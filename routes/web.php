@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AdminPanel\AdminController;
+use App\Http\Controllers\AdminPanel\EventController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\EventManagerPanel\EventManagerController;
 use App\Http\Controllers\ProfileController;
@@ -53,7 +54,16 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
     Route::post('/eventManager/{id}/update', [EventManagerController::class, 'updateEventManager'])->name('admin.eventManager.update');
     Route::post('/eventManager/{id}/delete', [EventManagerController::class, 'deleteEventManager'])->name('admin.eventManager.delete');
 
+    Route::get('/event-list', [EventController::class, 'getAllEvent'])->name('admin.event');
+    Route::get('event/showFormCreate', [EventController::class, 'formCreateEvent'])->name('admin.event.create');
+    Route::post('event/create', [EventController::class, 'creatEvent'])->name('admin.event.submit');
+    Route::get('/event/{id}/edit', [EventController::class, 'formEditEvent'])->name('admin.event.edit');
+    Route::post('/event/{id}/update', [EventController::class, 'updateEvent'])->name('admin.event.update');
+    Route::post('/event/{id}/delete', [EventController::class, 'deleteEvent'])->name('admin.event.delete');
+
 });
+
+
 
 Route::middleware(['auth', 'role:user'])->group(function () {
     Route::get('/user/dashboard', [UserController::class, 'index'])->name('user.dashboard');
