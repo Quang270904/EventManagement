@@ -39,12 +39,12 @@
                             User
                         </a>
                     </li>
-                    {{-- <li>
-                        <a href="{{ route('auth.dashboard.eventManager') }}"><i class="fa fa-circle-o"></i>
+                    <li>
+                        <a href="{{ route('admin.eventManager') }}"><i class="fa fa-circle-o"></i>
                             Event Manager
                         </a>
                     </li>
-                    <li>
+                    {{-- <li>
                         <a href="{{ route('auth.dashboard.event') }}"><i class="fa fa-circle-o"></i>
                             Event
                         </a>
