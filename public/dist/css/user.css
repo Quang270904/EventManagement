@@ -1,0 +1,29 @@
+.form-inline {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+
+}
+
+.input-group {
+    display: flex;
+}
+
+.add {
+    margin-left: 10px;
+    align-items: center;
+    justify-content: center;
+    margin-bottom:10px;
+}
+
+.actions {
+    display: flex; 
+    gap: 10px; 
+    align-items: center; 
+}
+
+.actions .btn {
+    display: inline-block; 
+    margin: 0; 
+}
