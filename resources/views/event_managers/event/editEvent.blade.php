@@ -1,6 +1,6 @@
 @extends('event_managers.dashboard.home.layout')
 
-@section('content')
+@section('contents')
     <div class="">
         <div class="">
             <h3>Edit Event</h3>

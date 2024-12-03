@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html>
 
@@ -23,23 +22,15 @@
         @include('event_managers.dashboard.components.sidebar')
 
         <div class="content-wrapper">
-            <!-- Content Header (Page header) -->
-            <section class="content-header">
-                @yield('content-header')  
-            </section>
 
- 
             <section class="content">
-                @yield('content')  
+                @yield('contents')
             </section>
 
-            <!-- Main content -->
-       
-            <!-- /.content -->
         </div>
         @include('event_managers.dashboard.components.footer')
 
-       immediately after the control sidebar -->
+        immediately after the control sidebar -->
         <div class="control-sidebar-bg"></div>
     </div>
 
