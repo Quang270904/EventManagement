@@ -1,11 +1,10 @@
 <?php
 
-namespace App\Http\Controllers\AdminPanel;
+namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\EventRequest;
 use App\Models\Event;
-use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -15,6 +14,8 @@ class EventController extends Controller
 {
     public function __construct() {}
 
+
+    // with role admin
     public function getAllEvent(Request $request)
     {
         $search = $request->input('search');
@@ -36,39 +37,6 @@ class EventController extends Controller
             $event->end_time = Carbon::parse($event->end_time);
         }
         return view('admin.event.index', compact('user', 'role', 'events', 'userDetail'));
-    }
-
-    public function getManagerEvents(Request $request)
-    {
-        $search = $request->input('search');
-        $user = Auth::user();
-        $userDetail = $user->userDetail;
-        $role = $user->role;
-
-        if ($role->role_name != 'event_manager') {
-            return redirect()->route('admin.dashboard')->with('error', 'You are not authorized to view these events');
-        }
-
-        $events = Event::query();
-
-        $events->where('user_id', $user->id);
-
-        if ($search) {
-            $events->where(function ($query) use ($search) {
-                $query->where('name', 'like', '%' . $search . '%')
-                    ->orWhere('description', 'like', '%' . $search . '%')
-                    ->orWhere('location', 'like', '%' . $search . '%');
-            });
-        }
-
-        $events = $events->paginate(10);
-
-        foreach ($events as $event) {
-            $event->start_time = Carbon::parse($event->start_time);
-            $event->end_time = Carbon::parse($event->end_time);
-        }
-
-        return view('event_managers.event.index', compact('user', 'role', 'events', 'userDetail'));
     }
 
     public function eventDetail($id)
@@ -186,5 +154,39 @@ class EventController extends Controller
             Log::error('Error deleting event: ' . $e->getMessage());
             return redirect()->route('admin.event')->with('error', 'Delete failed.');
         }
+    }
+
+    //with  Role event_manager
+    public function getEventOfEventManager(Request $request)
+    {
+        $search = $request->input('search');
+        $user = Auth::user();
+        $userDetail = $user->userDetail;
+        $role = $user->role;
+
+        if ($role->role_name != 'event_manager') {
+            return redirect()->route('admin.dashboard')->with('error', 'You are not authorized to view these events');
+        }
+
+        $events = Event::query();
+
+        $events->where('user_id', $user->id);
+
+        if ($search) {
+            $events->where(function ($query) use ($search) {
+                $query->where('name', 'like', '%' . $search . '%')
+                    ->orWhere('description', 'like', '%' . $search . '%')
+                    ->orWhere('location', 'like', '%' . $search . '%');
+            });
+        }
+
+        $events = $events->paginate(10);
+
+        foreach ($events as $event) {
+            $event->start_time = Carbon::parse($event->start_time);
+            $event->end_time = Carbon::parse($event->end_time);
+        }
+
+        return view('event_managers.event.index', compact('user', 'role', 'events', 'userDetail'));
     }
 }

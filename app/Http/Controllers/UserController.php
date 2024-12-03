@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\UserPanel;
+namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\UpdateUserRequest;
@@ -18,10 +18,13 @@ class UserController extends Controller
 
     public function __construct() {}
 
-    public function index()
-    {
-        return view('user.dashboard');
-    }
+    // public function index(Request $request)
+    // {
+    //     $user = Auth::user();
+    //     $userDetail = $user->userDetail;
+    //     $role = $user->role;
+    //     return view('admin.dashboard.home.layout', compact('user', 'role', 'userDetail'));
+    // }
 
     public function getAllUser(Request $request)
     {
@@ -43,17 +46,14 @@ class UserController extends Controller
         return view('admin.user.index', compact('user', 'role', 'userDetail', 'allUserDetails'));
     }
 
-
     public function showFormCreateUser()
     {
         $user = Auth::user();
-        $roles = Role::all();  
+        $roles = Role::all();
         $userDetail = $user->userDetail;
         $role = $user->role;
-        return view('admin.user.createUser', compact('user', 'userDetail', 'role','roles'));
+        return view('admin.user.createUser', compact('user', 'userDetail', 'role', 'roles'));
     }
-
-    //User
 
     public function createUser(UserRequest $request)
     {
@@ -118,7 +118,6 @@ class UserController extends Controller
             return redirect()->route('admin.user.edit', ['id' => $id])->with('error', 'Update failed');
         }
     }
-
 
     public function deleteUser($id)
     {

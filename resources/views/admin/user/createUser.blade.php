@@ -1,6 +1,6 @@
 @extends('admin.dashboard.home.layout')
 
-@section('content')
+@section('contents')
     <div class="">
         <div class="">
             <h3 class="">Create New User</h3>

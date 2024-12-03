@@ -3,7 +3,7 @@
 <html>
 
 <head>
-    @include('admin.dashboard.components.header')
+    @include('user.dashboard.components.header')
 
 </head>
 
@@ -15,27 +15,32 @@
                 <span class="logo-mini"><b>A</b>LT</span>
                 <span class="logo-lg"><b>Admin</b>LTE</span>
             </a>
-
-            @include('admin.dashboard.components.navbar')
+            <!-- Header Navbar: style can be found in header.less -->
+            @include('user.dashboard.components.navbar')
 
         </header>
 
-        @include('admin.dashboard.components.sidebar')
+        @include('user.dashboard.components.sidebar')
 
         <div class="content-wrapper">
+            <!-- Content Header (Page header) -->
+            <section class="content-header">
+                @yield('content-header')  
+            </section>
 
+ 
             <section class="content">
-                @yield('contents')  
+                @yield('content')  
             </section>
 
         </div>
-        @include('admin.dashboard.components.footer')
+        @include('user.dashboard.components.footer')
 
        immediately after the control sidebar -->
         <div class="control-sidebar-bg"></div>
     </div>
 
-    @include('admin.dashboard.components.script')
+    @include('user.dashboard.components.script')
 </body>
 
 </html>

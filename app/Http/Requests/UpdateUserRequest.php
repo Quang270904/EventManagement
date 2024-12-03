@@ -11,10 +11,9 @@ class UpdateUserRequest extends FormRequest
      */
     public function rules()
     {
-        // Kiểm tra xem là tạo mới hay cập nhật người dùng
         $rules = [
             'full_name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email,' . $this->route('id'), // Kiểm tra trùng email, bỏ qua khi đang cập nhật
+            'email' => 'required|email|unique:users,email,' . $this->route('id'), 
             'phone' => 'nullable|string|max:15',
             'address' => 'nullable|string|max:255',
             'gender' => 'required',
@@ -44,16 +43,14 @@ class UpdateUserRequest extends FormRequest
     }
 
     /**
-     * Xử lý dữ liệu đầu vào trước khi trả về.
+     * 
      *
      * @return array
      */
     public function prepareForValidation()
     {
-        // Nếu bạn cần xử lý thêm trước khi xác thực (chẳng hạn, làm sạch dữ liệu)
-        // Bạn có thể sử dụng phương thức này để chuẩn hóa dữ liệu
         $this->merge([
-            'dob' => $this->dob ? \Carbon\Carbon::parse($this->dob)->format('Y-m-d') : null,  // Đảm bảo ngày tháng đúng định dạng
+            'dob' => $this->dob ? \Carbon\Carbon::parse($this->dob)->format('Y-m-d') : null,  
         ]);
     }
 }

@@ -1,42 +1,51 @@
 @extends('admin.dashboard.home.layout')
 
-@section('content')
+@section('contents')
     <div class="box">
         <div class="box-header">
-            <h3 class="box-title">Create Ticket for Event: {{ $event->name }}</h3>
+            <h3 class="box-title">Create Ticket</h3>
         </div>
-        <div class="box-body">
-            <form action="{{ route('admin.ticket.submit', $event->id) }}" method="POST">
-                @csrf
-                
-                <!-- Ticket Type -->
+        <form action="{{ route('admin.ticket.submit') }}" method="POST">
+            @csrf
+            <div class="box-body">
                 <div class="form-group">
-                    <label for="ticket_type"><strong>Ticket Type:</strong></label>
+                    <label for="event_id">Select Event</label>
+                    <select name="event_id" id="event_id" class="form-control">
+                        <option value="">-- Select Event --</option>
+                        @foreach ($events as $event)
+                            <option value="{{ $event->id }}">{{ $event->name }}</option>
+                        @endforeach
+                    </select>
+                    @error('event_id')
+                        <div class="text-danger">{{ $message }}</div>
+                    @enderror
+                </div>
+
+                <div class="form-group">
+                    <label for="ticket_type">Ticket Type</label>
                     <select name="ticket_type" id="ticket_type" class="form-control" required>
+                        <option value="">-- Select Ticket Type --</option>
                         <option value="regular">Regular</option>
                         <option value="vip">VIP</option>
                         <option value="discounted">Discounted</option>
                     </select>
                     @error('ticket_type')
-                        <span class="text-danger">{{ $message }}</span>
+                        <div class="text-danger">{{ $message }}</div>
                     @enderror
                 </div>
-                
-                <!-- Price -->
+
                 <div class="form-group">
-                    <label for="price"><strong>Price:</strong></label>
-                    <input type="number" name="price" id="price" class="form-control" step="0.01" required>
+                    <label for="price">Price</label>
+                    <input type="number" name="price" id="price" class="form-control"
+                        placeholder="Enter ticket price" required>
                     @error('price')
-                        <span class="text-danger">{{ $message }}</span>
+                        <div class="text-danger">{{ $message }}</div>
                     @enderror
                 </div>
-
-                <!-- Hidden Event ID -->
-                <input type="hidden" name="event_id" value="{{ $event->id }}">
-
+            </div>
+            <div class="box-footer">
                 <button type="submit" class="btn btn-success">Create Ticket</button>
-                <a href="{{ route('admin.event') }}" class="btn btn-secondary">Back to Events</a>
-            </form>
-        </div>
+            </div>
+        </form>
     </div>
 @endsection

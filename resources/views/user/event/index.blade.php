@@ -1,5 +1,5 @@
 {{-- Manager Event --}}
-@extends('event_managers.dashboard.home.layout')
+@extends('user.dashboard.home.layout')
 
 @section('content')
     <div class="box">
@@ -7,7 +7,7 @@
             <h3 class="box-title">Management Event</h3>
         </div>
         <div class="form-inline pull-left  w-100">
-            <form action="{{ route('event_manager.event') }}" method="GET" class="form-inline ">
+            <form action="{{ route('user.event') }}" method="GET" class="form-inline ">
                 <div class="input-group">
                     <input type="text" name="search" class="form-control" placeholder="Search..."
                         value="{{ request('search') }}">
@@ -16,7 +16,6 @@
                     </span>
                 </div>
             </form>
-            <a href="{{ route('event_manager.event.create') }}" class="add btn btn-success ">Create</a>
         </div>
 
         <div class="box-body">
@@ -58,24 +57,17 @@
                                 <td>{{ ucfirst($event->status) }}</td>
                                 <td>
                                     <div class="actions">
-                                        <a href="{{ route('event_manager.event.show', $event->id) }}"
+                                        <a href="{{ route('user.event.show', $event->id) }}"
                                             class="btn btn-info btn-sm">Show Details</a>
-                                        <a href="{{ route('event_manager.event.edit', $event->id) }}"
-                                            class="btn btn-warning btn-sm">Update</a>
-                                        <form action="{{ route('event_manager.event.delete', $event->id) }}" method="POST"
-                                            onsubmit="return confirm('Are you sure you want to delete this event?')">
-                                            @csrf
-                                            <button type="submit" class="btn btn-danger btn-sm">Delete</button>
-                                        </form>
                                     </div>
                                 </td>
                             </tr>
                         @endforeach
                     </tbody>
                 </table>
-                <div class="box-footer clearfix">
+                {{-- <div class="box-footer clearfix">
                     {{ $events->links('admin.vendor.pagination.bootstrap-3') }}
-                </div>
+                </div> --}}
             @endif
         </div>
     </div>

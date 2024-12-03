@@ -2,7 +2,11 @@
 
 @extends('admin.dashboard.home.layout')
 
-@section('content')
+
+<?php
+// dd($tickets);
+?>
+@section('contents')
     <div class="box">
         <div class="box-header">
             <h3 class="box-title">Management Ticket</h3>
@@ -21,7 +25,7 @@
         </div>
 
         <div class="box-body">
-            @if ($events->isEmpty())
+            @if ($tickets->isEmpty())
                 <p class="text-center text-danger">Empty List Ticket</p>
             @else
                 <table id="example1" class="table table-bordered table-striped">
@@ -29,40 +33,26 @@
                         <tr>
                             <th>#</th>
                             <th>Event Name</th>
-                            <th>Name</th>
-                            <th>Priece</th>
+                            <th>Prices</th>
                             <th>Ticket_type</th>
                             <th>Created At</th>
                             <th>Updated At</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($events as $index => $event)
+                        @foreach ($tickets as $index => $ticket)
                             <tr>
-                                <td>{{ $events->firstItem() + $index }}</td>
-                                <td>
-                                    @if ($event->image)
-                                        <div>
-                                            <img class="image_path" src="{{ Storage::url($event->image) }}"
-                                                alt="Event Image">
-                                        </div>
-                                    @else
-                                        <p>No image available</p>
-                                    @endif
-                                </td>
-                                <td>{{ $event->name }}</td>
-                                <td>{{ $event->description }}</td>
-                                <td>{{ $event->location }}</td>
-                                <td>{{ $event->start_time->format('Y-m-d H:i') }}</td>
-                                <td>{{ $event->end_time->format('Y-m-d H:i') }}</td>
-                                <td>{{ ucfirst($event->status) }}</td>
+                                <td>{{ $tickets->firstItem() + $index }}</td>
+                                <td>{{ $ticket->event->name ?? 'No Event' }}</td>
+                                <td>{{ $ticket->price }}</td>
+                                <td>{{ $ticket->ticket_type }}</td>
+                                <td>{{ $ticket->created_at }}</td>
+                                <td>{{ $ticket->updated_at }}</td>
                                 <td>
                                     <div class="actions">
-                                        <a href="{{ route('admin.event.show', $event->id) }}"
-                                            class="btn btn-info btn-sm">Show Details</a>
-                                        <a href="{{ route('admin.event.edit', $event->id) }}"
+                                        <a href="{{ route('admin.ticket.edit', $ticket->id) }}"
                                             class="btn btn-warning btn-sm">Update</a>
-                                        <form action="{{ route('admin.event.delete', $event->id) }}" method="POST"
+                                        <form action="{{ route('admin.ticket.delete', $ticket->id) }}" method="POST"
                                             onsubmit="return confirm('Are you sure you want to delete this event?')">
                                             @csrf
                                             <button type="submit" class="btn btn-danger btn-sm">Delete</button>
@@ -73,9 +63,9 @@
                         @endforeach
                     </tbody>
                 </table>
-                <div class="box-footer clearfix">
+                {{-- <div class="box-footer clearfix">
                     {{ $events->links('admin.vendor.pagination.bootstrap-3') }}
-                </div>
+                </div> --}}
             @endif
         </div>
 

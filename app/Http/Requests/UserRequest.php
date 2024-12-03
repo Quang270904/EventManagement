@@ -22,14 +22,14 @@ class UserRequest extends FormRequest
     public function rules()
     {
         return [
-            'email' => 'required|email|unique:users,email', // This ensures the email is unique
-            'password' => 'required|min:6|confirmed',  // Mật khẩu yêu cầu có ít nhất 6 ký tự và khớp với "password_confirmation"
-            'full_name' => 'required|string|max:255',  // Kiểm tra tên đầy đủ
-            'phone' => 'required|string|max:15',  // Kiểm tra số điện thoại
-            'address' => 'required|string|max:255',  // Kiểm tra địa chỉ
-            'gender' => 'required|string',  // Kiểm tra giới tính
-            'dob' => 'required|date',  // Kiểm tra ngày sinh
-            'role_id' => 'required|exists:roles,id',  // Validate that the selected role exists in the 'roles' table
+            'email' => 'required|email|unique:users,email', 
+            'password' => 'required|min:6|confirmed',  
+            'full_name' => 'required|string|max:255',  
+            'phone' => 'required|string|max:15', 
+            'address' => 'required|string|max:255',  
+            'gender' => 'required|string',  
+            'dob' => 'required|date', 
+            'role_id' => 'required|exists:roles,id',  
 
         ];
     }

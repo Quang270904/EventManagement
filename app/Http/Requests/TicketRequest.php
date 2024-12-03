@@ -22,8 +22,8 @@ class TicketRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'ticket_type' => 'required|in:regular,vip,discounted',  // Ticket type must be one of these
-            'price' => 'required|numeric|min:0',  // Price must be a number and cannot be negative
+            'ticket_type' => 'required|in:regular,vip,discounted',  
+            'price' => 'required|numeric|min:0',  
         ];
     }
 

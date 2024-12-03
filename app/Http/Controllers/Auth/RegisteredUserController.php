@@ -3,14 +3,14 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\UserRequest;
+use App\Models\Role;
 use App\Models\User;
-use App\Providers\RouteServiceProvider;
-use Illuminate\Auth\Events\Registered;
+use App\Models\UserDetail;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\Rules;
+use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
 
 class RegisteredUserController extends Controller
@@ -20,7 +20,9 @@ class RegisteredUserController extends Controller
      */
     public function create(): View
     {
-        return view('auth.register');
+        $roles = Role::whereNotIn('role_name', ['admin', 'event_manager'])->get();
+
+        return view('auth.register',compact('roles'));
     }
 
     /**
@@ -28,24 +30,32 @@ class RegisteredUserController extends Controller
      *
      * @throws \Illuminate\Validation\ValidationException
      */
-    public function store(Request $request): RedirectResponse
+    public function store(UserRequest $request): RedirectResponse
     {
-        $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
-        ]);
+        try {
+            $role = Role::findOrFail($request->role_id);
 
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-        ]);
+            $user = User::create([
+                'email' => $request->email,
+                'password' => Hash::make($request->password),
+                'role_id' => $role->id,
+            ]);
 
-        event(new Registered($user));
+            UserDetail::create([
+                'user_id' => $user->id,
+                'full_name' => $request->full_name,
+                'phone' => $request->phone,
+                'address' => $request->address,
+                'gender' => $request->gender,
+                'dob' => $request->dob,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
 
-        Auth::login($user);
-
-        return redirect(RouteServiceProvider::HOME);
+            return redirect()->route('admin.user')->with('success', 'Register successfully');
+        } catch (\Exception $e) {
+            Log::error('Error registering user: ' . $e->getMessage());
+            return redirect()->route('admin.user.create')->with('error', 'Register failed');
+        }
     }
 }
