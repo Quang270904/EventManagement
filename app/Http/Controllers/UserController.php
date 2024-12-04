@@ -16,6 +16,73 @@ class UserController extends Controller
 
     public function __construct() {}
 
+    public function getAllUser()
+    {
+        $users = User::with(['userDetail', 'role'])->paginate(10);
+
+        return response()->json([
+            'users' => $users->items(),
+            'pagination' => [
+                'current_page' => $users->currentPage(),
+                'last_page' => $users->lastPage(),
+                'total' => $users->total(),
+            ]
+        ]);
+    }
+
+    public function createUser(UserRequest $request)
+    {
+        $validatedData = $request->validated();
+
+        $user = new User();
+        $user->email = $validatedData['email'];
+        $user->password = bcrypt($validatedData['password']);
+        $user->role_id = $validatedData['role_id'];
+        $user->save();
+
+        $userDetail = new UserDetail();
+        $userDetail->user_id = $user->id;
+        $userDetail->full_name = $validatedData['full_name'];
+        $userDetail->address = $validatedData['address'];
+        $userDetail->phone = $validatedData['phone'];
+        $userDetail->gender = $validatedData['gender'];
+        $userDetail->dob = $validatedData['dob'];
+        $userDetail->save();
+
+        return  response()->json(['res' => 'User create successfully!', 'user' => $user]);
+    }
+
+    public function updateUser($id, UpdateUserRequest $request)
+    {
+        $validatedData = $request->validated();
+
+        $user = User::findOrFail($id);
+        $userDetail = $user->userDetail;
+
+        $user->email = $validatedData['email'];
+        $user->password = $validatedData['password'] ?? $user->password;
+        $user->role_id = $validatedData['role_id'];
+        $user->save();
+
+        $userDetail->full_name = $validatedData['full_name'];
+        $userDetail->address = $validatedData['address'];
+        $userDetail->phone = $validatedData['phone'];
+        $userDetail->gender = $validatedData['gender'];
+        $userDetail->dob = $validatedData['dob'];
+        $userDetail->save();
+
+        return response()->json(['res' => 'User updated successfully!', 'user' => $user]);
+    }
+
+    public function deleteUser($id)
+    {
+        $user = User::findOrFail($id);
+        $user->userDetail()->delete();
+        $user->delete();
+
+        return response()->json(['res' => 'User deleted successfully!']);
+    }
+
     public function search(Request $request)
     {
         $search = $request->get('search', '');
@@ -49,20 +116,7 @@ class UserController extends Controller
         $users = User::with(['userDetail', 'role'])->get();
         return view('admin.user.index', compact('user', 'userDetail', 'users'));
     }
-
-    public function getAllUser()
-    {
-        $users = User::with(['userDetail', 'role'])->paginate(10);
-
-        return response()->json([
-            'users' => $users->items(),
-            'pagination' => [
-                'current_page' => $users->currentPage(),
-                'last_page' => $users->lastPage(),
-                'total' => $users->total(),
-            ]
-        ]);
-    }
+    
     public function showFormCreateUser()
     {
         $user = Auth::user();
@@ -71,72 +125,11 @@ class UserController extends Controller
         return view('admin.user.createUser', compact('user', 'userDetail', 'roles'));
     }
 
-    public function createUser(UserRequest $request)
-    {
-        $validatedData = $request->validated();
-
-        $existingUser = User::where('email', $validatedData['email'])->first();
-
-        if ($existingUser) {
-            return redirect()->back()->with('error', 'Email đã tồn tại.');
-        }
-
-        $user = new User();
-        $user->email = $validatedData['email'];
-        $user->password = bcrypt($validatedData['password']);
-        $user->role_id = $validatedData['role_id'];
-        $user->save();
-
-        $userDetail = new UserDetail();
-        $userDetail->user_id = $user->id;
-        $userDetail->full_name = $validatedData['full_name'];
-        $userDetail->address = $validatedData['address'];
-        $userDetail->phone = $validatedData['phone'];
-        $userDetail->gender = $validatedData['gender'];
-        $userDetail->dob = $validatedData['dob'];
-        $userDetail->save();
-
-        return  response()->json(['res' => 'User create successfully!', 'user' => $user]);
-    }
-
     public function showFormEditUser($id)
     {
         $user = User::findOrFail($id);
         $roles = Role::all();
         $userDetail = $user->userDetail;
         return view('admin.user.editUser', compact('user', 'userDetail', 'roles'));
-    }
-
-    public function updateUser($id, UpdateUserRequest $request)
-    {
-        $validatedData = $request->validated();
-
-        $user = User::findOrFail($id);
-        $userDetail = $user->userDetail;
-
-        $user->email = $validatedData['email'];
-        $user->password = $validatedData['password'] ?? $user->password;
-        $user->role_id = $validatedData['role_id'];
-        $user->save();
-
-        $userDetail->full_name = $validatedData['full_name'];
-        $userDetail->address = $validatedData['address'];
-        $userDetail->phone = $validatedData['phone'];
-        $userDetail->gender = $validatedData['gender'];
-        $userDetail->dob = $validatedData['dob'];
-        $userDetail->save();
-
-        return response()->json(['res' => 'User updated successfully!', 'user' => $user]);
-    }
-
-    public function deleteUser($id)
-    {
-        $user = User::findOrFail($id);
-
-        $user->userDetail()->delete();
-
-        $user->delete();
-
-        return response()->json(['res' => 'User deleted successfully!']);
     }
 }

@@ -54,8 +54,11 @@
                 </div>
 
                 <div class="form-group">
-                    <input type="text" class="form-control" name="gender" placeholder="Gender"
-                        value="{{ old('gender') }}">
+                    <select aria-placeholder="Gender" class="form-control" name="gender">
+                        <option value="Nam" {{ old('gender') }}>Nam</option>
+                        <option value="Nữ" {{ old('gender') }}>Nữ</option>
+                        <option value="Other" {{ old('gender') }}>Other</option>
+                    </select>
                     @error('gender')
                         <span class="text-danger">{{ $message }}</span>
                     @enderror
@@ -96,10 +99,10 @@
             $("#myForm").submit(function(event) {
                 event.preventDefault();
 
-                var form = $("#myForm")[0];
+                var form = $(this)[0];
                 var data = new FormData(form);
 
-                $("#btnSubmit").prop("disable", true);
+                $("#btnSubmit").prop("disabled", true);
 
                 $.ajax({
                     type: "POST",
@@ -108,12 +111,29 @@
                     processData: false,
                     contentType: false,
                     success: function(data) {
+                        // window.location.href =
+                        //     "{{ route('admin.user') }}";
                         toastr.success("User created successfully!");
                     },
-                    error: function(e) {
+                    error: function(xhr) {
+                        if (xhr.status === 422) {
+                            displayErrors(xhr.responseJSON.errors);
+                        } else {
+                            toastr.error("Something went wrong. Please try again.");
+                        }
+                        $("#btnSubmit").prop("disabled", false);
                     }
                 });
             });
+
+            function displayErrors(errors) {
+                $('.text-danger').remove();
+                $.each(errors, function(field, messages) {
+                    var input = $('input[name="' + field + '"], select[name="' + field + '"]');
+                    input.after('<span class="text-danger">' + messages[0] +
+                        '</span>');
+                });
+            }
         });
     </script>
 @endsection
