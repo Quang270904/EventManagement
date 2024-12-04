@@ -41,7 +41,9 @@ Route::get('/logout', [AuthController::class, 'logout'])->name('auth.logout');
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
     Route::get('/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
 
-    Route::get('/user-list', [UserController::class, 'getAllUser'])->name('admin.user');
+    Route::get('/user/search', [UserController::class, 'search'])->name('admin.user.search');
+    Route::get('/user-list', [UserController::class, 'formUserList'])->name('admin.user');
+    Route::get('/get-all-user', [UserController::class, 'getAllUser'])->name('admin.user.get');
     Route::get('user/showFormCreate', [UserController::class, 'showFormCreateUser'])->name('admin.user.create');
     Route::post('user/create', [UserController::class, 'createUser'])->name('admin.user.submit');
     Route::get('/user/{id}/edit', [UserController::class, 'showFormEditUser'])->name('admin.user.edit');

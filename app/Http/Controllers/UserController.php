@@ -10,32 +10,46 @@ use App\Models\User;
 use App\Models\UserDetail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 
 class UserController extends Controller
 {
 
     public function __construct() {}
-    
-    public function getAllUser(Request $request)
+
+
+    public function search(Request $request)
     {
-        $search = $request->input('search');
+        $search = $request->get('search', '');
+
+        $users = User::with(['userDetail', 'role'])
+            ->whereHas('userDetail', function ($query) use ($search) {
+                $query->where('full_name', 'like', '%' . $search . '%')
+                    ->orWhere('address', 'like', '%' . $search . '%')
+                    ->orWhere('phone', 'like', '%' . $search . '%');
+            })
+            ->orWhere('email', 'like', '%' . $search . '%')
+            ->orWhereHas('role', function ($query) use ($search) {
+                $query->where('role_name', 'like', '%' . $search . '%');
+            })
+            ->get();
+
+        return response()->json(['users' => $users]);
+    }
+
+    public function formUserList(Request $request)
+    {
         $user = Auth::user();
         $userDetail = $user->userDetail;
-        $role = $user->role;
+        $users = User::with(['userDetail', 'role'])->get();
+        return view('admin.user.index', compact('user', 'userDetail', 'users'));
+    }
 
-        $allUserDetails = UserDetail::with('user')
-            ->where(function ($query) use ($search) {
-                if ($search) {
-                    $query->where('full_name', 'like', "%$search%")
-                        ->orWhere('address', 'like', "%$search%")
-                        ->orWhere('phone', 'like', "%$search%");
-                }
-            })
-            ->paginate(10);
+    public function getAllUser()
+    {
+        $users = User::with(['userDetail', 'role'])->get();
 
-        return view('admin.user.index', compact('user', 'role', 'userDetail', 'allUserDetails'));
+        return response()->json(['users' => $users]);
     }
 
     public function showFormCreateUser()
@@ -43,84 +57,75 @@ class UserController extends Controller
         $user = Auth::user();
         $roles = Role::all();
         $userDetail = $user->userDetail;
-        $role = $user->role;
-        return view('admin.user.createUser', compact('user', 'userDetail', 'role', 'roles'));
+        return view('admin.user.createUser', compact('user', 'userDetail', 'roles'));
     }
 
     public function createUser(UserRequest $request)
     {
-        try {
-            $role = Role::findOrFail($request->role_id);
+        $validatedData = $request->validated();
 
-            $user = User::create([
-                'email' => $request->email,
-                'password' => Hash::make($request->password),
-                'role_id' => $role->id,
-            ]);
+        $existingUser = User::where('email', $validatedData['email'])->first();
 
-            UserDetail::create([
-                'user_id' => $user->id,
-                'full_name' => $request->full_name,
-                'phone' => $request->phone,
-                'address' => $request->address,
-                'gender' => $request->gender,
-                'dob' => $request->dob,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
-
-            return redirect()->route('admin.user')->with('success', 'Register successfully');
-        } catch (\Exception $e) {
-            Log::error('Error registering user: ' . $e->getMessage());
-            return redirect()->route('admin.user.create')->with('error', 'Register failed');
+        if ($existingUser) {
+            return redirect()->back()->with('error', 'Email đã tồn tại.');
         }
+
+        $user = new User();
+        $user->email = $validatedData['email'];
+        $user->password = bcrypt($validatedData['password']);
+        $user->role_id = $validatedData['role_id'];
+        $user->save();
+
+        $userDetail = new UserDetail();
+        $userDetail->user_id = $user->id;
+        $userDetail->full_name = $validatedData['full_name'];
+        $userDetail->address = $validatedData['address'];
+        $userDetail->phone = $validatedData['phone'];
+        $userDetail->gender = $validatedData['gender'];
+        $userDetail->dob = $validatedData['dob'];
+        $userDetail->save();
+
+        return  response()->json(['res' => 'User create successfully!', 'user' => $user]);
     }
 
     public function showFormEditUser($id)
     {
         $user = User::findOrFail($id);
+        $roles = Role::all();
         $userDetail = $user->userDetail;
-        $role = $user->role;
-
-        return view('admin.user.editUser', compact('user', 'userDetail', 'role'));
+        return view('admin.user.editUser', compact('user', 'userDetail', 'roles'));
     }
 
     public function updateUser($id, UpdateUserRequest $request)
     {
-        try {
-            $user = User::findOrFail($id);
+        $validatedData = $request->validated();
 
-            $user->update([
-                'email' => $request->email,
-                'role_id' => $user->role_id,
-            ]);
+        $user = User::findOrFail($id);
+        $userDetail = $user->userDetail;
 
-            $user->userDetail->update([
-                'full_name' => $request->full_name,
-                'phone' => $request->phone,
-                'address' => $request->address,
-                'gender' => $request->gender,
-                'dob' => $request->dob,
-                'updated_at' => now(),
-            ]);
+        $user->email = $validatedData['email'];
+        $user->password = $validatedData['password'] ?? $user->password;
+        $user->role_id = $validatedData['role_id'];
+        $user->save();
 
-            return redirect()->route('admin.user')->with('success', 'User updated successfully');
-        } catch (\Exception $e) {
-            Log::error('Error updating user: ' . $e->getMessage());
-            return redirect()->route('admin.user.edit', ['id' => $id])->with('error', 'Update failed');
-        }
+        $userDetail->full_name = $validatedData['full_name'];
+        $userDetail->address = $validatedData['address'];
+        $userDetail->phone = $validatedData['phone'];
+        $userDetail->gender = $validatedData['gender'];
+        $userDetail->dob = $validatedData['dob'];
+        $userDetail->save();
+
+        return response()->json(['res' => 'User updated successfully!', 'user' => $user]);
     }
 
     public function deleteUser($id)
     {
-        try {
-            $user = User::findOrFail($id);
-            $user->userDetail()->delete();
-            $user->delete();
-            return redirect()->route('admin.user')->with('success', 'User deleted successfully');
-        } catch (\Exception $e) {
-            Log::error('Error deleting user: ' . $e->getMessage());
-            return redirect()->route('admin.user')->with('error', 'Delete failed');
-        }
+        $user = User::findOrFail($id);
+
+        $user->userDetail()->delete();
+
+        $user->delete();
+
+        return response()->json(['res' => 'User deleted successfully!']);
     }
 }

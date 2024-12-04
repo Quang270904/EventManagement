@@ -7,7 +7,7 @@
         </div>
 
         <div class="">
-            <form action="{{ route('admin.user.submit') }}" method="POST">
+            <form id="myForm">
                 @csrf
 
                 <div class="form-group">
@@ -82,9 +82,38 @@
                     @enderror
                 </div>
 
-                <button type="submit" class="btn btn-primary">Create User</button>
+                <button type="submit" id="btnSubmit" class="btn btn-primary">Create User</button>
                 <a href="{{ route('admin.user') }}" class="btn btn-secondary">Cancel</a>
             </form>
         </div>
     </div>
+@endsection
+
+
+@section('scripts')
+    <script>
+        $(document).ready(function() {
+            $("#myForm").submit(function(event) {
+                event.preventDefault();
+
+                var form = $("#myForm")[0];
+                var data = new FormData(form);
+
+                $("#btnSubmit").prop("disable", true);
+
+                $.ajax({
+                    type: "POST",
+                    url: "{{ route('admin.user.submit') }}",
+                    data: data,
+                    processData: false,
+                    contentType: false,
+                    success: function(data) {
+                        toastr.success("User created successfully!");
+                    },
+                    error: function(e) {
+                    }
+                });
+            });
+        });
+    </script>
 @endsection

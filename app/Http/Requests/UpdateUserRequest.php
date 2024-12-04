@@ -13,11 +13,12 @@ class UpdateUserRequest extends FormRequest
     {
         $rules = [
             'full_name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email,' . $this->route('id'), 
+            'email' => 'required|email|unique:users,email,' . $this->route('id'),
             'phone' => 'nullable|string|max:15',
             'address' => 'nullable|string|max:255',
             'gender' => 'required',
             'dob' => 'required|date',
+            'role_id' => 'required|exists:roles,id',
         ];
 
         return $rules;
@@ -39,6 +40,8 @@ class UpdateUserRequest extends FormRequest
             'address.max' => 'Address may not be greater than 255 characters.',
             'dob.required' => 'Date is required',
             'gender.required' => 'Gender is required',
+            'role_id.required' => 'Role is required.',
+            'role_id.exists' => 'The selected role is invalid.',
         ];
     }
 
@@ -50,7 +53,7 @@ class UpdateUserRequest extends FormRequest
     public function prepareForValidation()
     {
         $this->merge([
-            'dob' => $this->dob ? \Carbon\Carbon::parse($this->dob)->format('Y-m-d') : null,  
+            'dob' => $this->dob ? \Carbon\Carbon::parse($this->dob)->format('Y-m-d') : null,
         ]);
     }
 }
