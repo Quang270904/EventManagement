@@ -32,6 +32,7 @@
                     </tbody>
                 </table>
                 <div class="box-footer clearfix">
+                    {{-- pagination --}}
                 </div>
             @endif
         </div>
@@ -40,37 +41,34 @@
 
 @section('scripts')
     <script>
-
-        // SearchUser
+        // search User
         $(document).ready(function() {
             loadUsers();
 
             $('#search').on('keyup', function() {
                 let value = $(this).val();
+                loadUsers(value);
+            });
 
-                $.ajax({
-                    type: 'GET',
-                    url: '{{ route('admin.user.search') }}',
-                    data: {
-                        search: value
-                    },
-                    success: function(data) {
-                        updateUserTable(data.users);
-                    },
-                    error: function(e) {
-                        console.log(e.responseText);
-                    }
-                });
+            $(document).on('click', '.pagination-link', function(event) {
+                event.preventDefault();
+                let page = $(this).data('page');
+                loadUsers($('#search').val(), page);
             });
         });
 
-
-        function loadUsers() {
+        //get all User
+        function loadUsers(search = '', page = 1) {
             $.ajax({
                 type: 'GET',
-                url: '{{ route('admin.user.get') }}',
+                url: '{{ route('admin.user.search') }}',
+                data: {
+                    search: search,
+                    page: page
+                },
                 success: function(data) {
                     updateUserTable(data.users);
+                    updatePagination(data.pagination);
                 },
                 error: function(e) {
                     console.log(e.responseText);
@@ -100,6 +98,35 @@
                 });
             } else {
                 tableBody.html("<tr><td colspan='7' class='text-center text-danger'>No users found</td></tr>");
+            }
+        }
+
+        //pagination
+        function updatePagination(pagination) {
+            let paginationContainer = $('.box-footer.clearfix');
+            paginationContainer.empty();
+
+            if (pagination.total > 0) {
+                let prevPage = pagination.current_page > 1 ? pagination.current_page - 1 : 1;
+                let nextPage = pagination.current_page < pagination.last_page ? pagination.current_page + 1 : pagination
+                    .last_page;
+
+                let paginationHTML = `<ul class="pagination">
+            <li class="page-item ${pagination.current_page === 1 ? 'disabled' : ''}">
+                <a class="page-link pagination-link" href="#" data-page="${prevPage}">Previous</a>
+            </li>`;
+
+                for (let i = 1; i <= pagination.last_page; i++) {
+                    paginationHTML += `<li class="page-item ${pagination.current_page === i ? 'active' : ''}">
+                <a class="page-link pagination-link" href="#" data-page="${i}">${i}</a>
+            </li>`;
+                }
+
+                paginationHTML += `<li class="page-item ${pagination.current_page === pagination.last_page ? 'disabled' : ''}">
+            <a class="page-link pagination-link" href="#" data-page="${nextPage}">Next</a>
+        </li></ul>`;
+
+                paginationContainer.append(paginationHTML);
             }
         }
 

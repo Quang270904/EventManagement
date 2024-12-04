@@ -10,13 +10,11 @@ use App\Models\User;
 use App\Models\UserDetail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
 
 class UserController extends Controller
 {
 
     public function __construct() {}
-
 
     public function search(Request $request)
     {
@@ -32,9 +30,16 @@ class UserController extends Controller
             ->orWhereHas('role', function ($query) use ($search) {
                 $query->where('role_name', 'like', '%' . $search . '%');
             })
-            ->get();
+            ->paginate(10);
 
-        return response()->json(['users' => $users]);
+        return response()->json([
+            'users' => $users->items(),
+            'pagination' => [
+                'current_page' => $users->currentPage(),
+                'last_page' => $users->lastPage(),
+                'total' => $users->total(),
+            ]
+        ]);
     }
 
     public function formUserList(Request $request)
@@ -47,11 +52,17 @@ class UserController extends Controller
 
     public function getAllUser()
     {
-        $users = User::with(['userDetail', 'role'])->get();
+        $users = User::with(['userDetail', 'role'])->paginate(10);
 
-        return response()->json(['users' => $users]);
+        return response()->json([
+            'users' => $users->items(),
+            'pagination' => [
+                'current_page' => $users->currentPage(),
+                'last_page' => $users->lastPage(),
+                'total' => $users->total(),
+            ]
+        ]);
     }
-
     public function showFormCreateUser()
     {
         $user = Auth::user();
