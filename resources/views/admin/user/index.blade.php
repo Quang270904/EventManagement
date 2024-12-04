@@ -67,7 +67,7 @@
                     page: page
                 },
                 success: function(data) {
-                    updateUserTable(data.users);
+                    updateUserTable(data.users, page);
                     updatePagination(data.pagination);
                 },
                 error: function(e) {
@@ -76,14 +76,15 @@
             });
         }
 
-        function updateUserTable(users) {
+        function updateUserTable(users, page = 1) {
             let tableBody = $('#userTableBody');
             tableBody.empty();
+            const offset = (page - 1) * 10;
 
             if (users.length > 0) {
                 users.forEach(function(user, index) {
                     let row = `<tr>
-                <td>${index + 1}</td>
+                <td>${offset + index + 1}</td> 
                 <td>${user.user_detail.full_name}</td>
                 <td>${user.user_detail.address}</td>
                 <td>${user.email}</td>
