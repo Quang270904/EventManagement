@@ -91,6 +91,7 @@
                 <td>${user.user_detail.phone}</td>
                 <td>${user.role.role_name}</td>
                 <td>
+                    <a href="javascript:void(0);" class="btn btn-info btn-sm viewUserBtn" data-id="{{ $user->id }}">View</a>
                     <a href="/admin/user/${user.id}/edit" class="btn btn-warning btn-sm">Edit</a>
                     <a href="#" data-id="${user.id}" class="deleteData btn btn-danger btn-sm">Delete</a>
                 </td>

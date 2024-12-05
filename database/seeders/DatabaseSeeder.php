@@ -22,7 +22,7 @@ class DatabaseSeeder extends Seeder
         // ]);
 
         //  DB::table('roles')->insert([
-        //     'role_name' => 'admin',
+        //     'role_name' => 'user',
         // ]);
 
         //   DB::table('users')->insert([

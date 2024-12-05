@@ -26,7 +26,7 @@ class TicketController extends Controller
             })
             ->paginate(10);
 
-        return view('admin.ticket.index', compact('tickets', 'userDetail', 'role'));
+        return view('admin.ticket.index', compact('tickets', 'userDetail', 'role','user'));
     }
 
     public function formCreateTicket()

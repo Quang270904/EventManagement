@@ -7,15 +7,10 @@
             <h3 class="box-title">Management Event</h3>
         </div>
         <div class="form-inline pull-left  w-100">
-            <form action="{{ route('user.event') }}" method="GET" class="form-inline ">
-                <div class="input-group">
-                    <input type="text" name="search" class="form-control" placeholder="Search..."
-                        value="{{ request('search') }}">
-                    <span class="input-group-btn">
-                        <button type="submit" class="btn btn-primary">Search</button>
-                    </span>
-                </div>
-            </form>
+            <div class="input-group">
+                <input id="search" type="text" name="search" class="form-control" placeholder="Search...">
+
+            </div>
         </div>
 
         <div class="box-body">
@@ -35,40 +30,133 @@
                             <th>Status</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        @foreach ($events as $index => $event)
-                            <tr>
-                                <td>{{ $events->firstItem() + $index }}</td>
-                                <td>
-                                    @if ($event->image)
-                                        <div>
-                                            <img class="image_path" src="{{ Storage::url($event->image) }}"
-                                                alt="Event Image">
-                                        </div>
-                                    @else
-                                        <p>No image available</p>
-                                    @endif
-                                </td>
-                                <td>{{ $event->name }}</td>
-                                <td>{{ $event->description }}</td>
-                                <td>{{ $event->location }}</td>
-                                <td>{{ $event->start_time->format('Y-m-d H:i') }}</td>
-                                <td>{{ $event->end_time->format('Y-m-d H:i') }}</td>
-                                <td>{{ ucfirst($event->status) }}</td>
-                                <td>
-                                    <div class="actions">
-                                        <a href="{{ route('user.event.show', $event->id) }}"
-                                            class="btn btn-info btn-sm">Show Details</a>
-                                    </div>
-                                </td>
-                            </tr>
-                        @endforeach
+                    <tbody id="eventTableBody">
+
                     </tbody>
                 </table>
-                {{-- <div class="box-footer clearfix">
-                    {{ $events->links('admin.vendor.pagination.bootstrap-3') }}
-                </div> --}}
+                <div class="box-footer clearfix">
+                    {{-- pagination --}}
+                </div>
             @endif
         </div>
     </div>
+@endsection
+
+@section('scripts')
+    <script>
+        // search event
+        $(document).ready(function() {
+            loadUsers();
+
+            $('#search').on('keyup', function() {
+                let value = $(this).val();
+                loadUsers(value);
+            });
+
+            $(document).on('click', '.pagination-link', function(event) {
+                event.preventDefault();
+                let page = $(this).data('page');
+                loadUsers($('#search').val(), page);
+            });
+        });
+
+        //get all User
+        function loadEvents(search = '', page = 1) {
+            $.ajax({
+                type: 'GET',
+                url: '{{ route('admin.event.search') }}',
+                data: {
+                    search: search,
+                    page: page
+                },
+                success: function(data) {
+                    updateEventTable(data.events, page);
+                    updatePagination(data.pagination);
+                },
+                error: function(e) {
+                    console.log(e.responseText);
+                }
+            });
+        }
+
+        function updateEventTable(events, page = 1) {
+            let tableBody = $('#eventTableBody');
+            tableBody.empty();
+            const offset = (page - 1) * 10;
+
+            if (events.length > 0) {
+                events.forEach(function(event, index) {
+                    let row = `<tr>
+                <td>${offset + index + 1}</td> 
+                <td>${event.user_detail.full_name}</td>
+                <td>${event.user_detail.address}</td>
+                <td>${event.email}</td>
+                <td>${event.user_detail.phone}</td>
+                <td>${event.role.role_name}</td>
+                <td>
+                    <a href="/admin/event/${event.id}/edit" class="btn btn-warning btn-sm">Edit</a>
+                    <a href="#" data-id="${event.id}" class="deleteData btn btn-danger btn-sm">Delete</a>
+                </td>
+            </tr>`;
+                    tableBody.append(row);
+                });
+            } else {
+                tableBody.html("<tr><td colspan='7' class='text-center text-danger'>No events found</td></tr>");
+            }
+        }
+
+        //pagination
+        function updatePagination(pagination) {
+            let paginationContainer = $('.box-footer.clearfix');
+            paginationContainer.empty();
+
+            if (pagination.total > 0) {
+                let prevPage = pagination.current_page > 1 ? pagination.current_page - 1 : 1;
+                let nextPage = pagination.current_page < pagination.last_page ? pagination.current_page + 1 : pagination
+                    .last_page;
+
+                let paginationHTML = `<ul class="pagination">
+            <li class="page-item ${pagination.current_page === 1 ? 'disabled' : ''}">
+                <a class="page-link pagination-link" href="#" data-page="${prevPage}">Previous</a>
+            </li>`;
+
+                for (let i = 1; i <= pagination.last_page; i++) {
+                    paginationHTML += `<li class="page-item ${pagination.current_page === i ? 'active' : ''}">
+                <a class="page-link pagination-link" href="#" data-page="${i}">${i}</a>
+            </li>`;
+                }
+
+                paginationHTML += `<li class="page-item ${pagination.current_page === pagination.last_page ? 'disabled' : ''}">
+            <a class="page-link pagination-link" href="#" data-page="${nextPage}">Next</a>
+        </li></ul>`;
+
+                paginationContainer.append(paginationHTML);
+            }
+        }
+
+        // delete user
+        // $(document).on('click', '.deleteData', function(event) {
+        //     event.preventDefault();
+
+        //     var userId = $(this).data('id');
+
+        //     if (confirm("Are you sure you want to delete this user?")) {
+        //         $.ajax({
+        //             type: "POST",
+        //             url: "/admin/user/" + userId + "/delete",
+        //             data: {
+        //                 _token: $("meta[name='csrf-token']").attr("content"),
+        //             },
+        //             success: function(response) {
+        //                 $('a[data-id="' + userId + '"]').closest('tr').remove();
+        //                 toastr.success("User deleted successfully!");
+        //             },
+        //             error: function(e) {
+        //                 console.log(e.responseText);
+        //                 alert("Error deleting the user.");
+        //             }
+        //         });
+        //     }
+        // });
+    </script>
 @endsection

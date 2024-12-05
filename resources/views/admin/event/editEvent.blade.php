@@ -5,7 +5,7 @@
         <div class="">
             <h3>Edit Event</h3>
 
-            <form action="{{ route('admin.event.update', $event->id) }}" method="POST" enctype="multipart/form-data">
+            <form id="update-form" enctype="multipart/form-data">
                 @csrf
 
                 <div class="form-group">
@@ -15,17 +15,18 @@
                         <span class="text-danger">{{ $message }}</span>
                     @enderror
 
-                    @if($event->image)
+                    @if ($event->image)
                         <div class="mt-2">
                             <p>Current Image:</p>
-                            <img src="{{ Storage::url($event->image) }}" class="image_path" alt="Event Image">
+                            <img src="{{ Storage::url($event->image) }}" class="event-image" alt="Event Image">
                         </div>
                     @endif
                 </div>
 
                 <div class="form-group">
                     <label for="name">Event Name</label>
-                    <input type="text" class="form-control" name="name" value="{{ old('name', $event->name) }}" required>
+                    <input type="text" class="form-control" name="name" value="{{ old('name', $event->name) }}"
+                        required>
                     @error('name')
                         <span class="text-danger">{{ $message }}</span>
                     @enderror
@@ -41,7 +42,8 @@
 
                 <div class="form-group">
                     <label for="location">Location</label>
-                    <input type="text" class="form-control" name="location" value="{{ old('location', $event->location) }}" required>
+                    <input type="text" class="form-control" name="location"
+                        value="{{ old('location', $event->location) }}" required>
                     @error('location')
                         <span class="text-danger">{{ $message }}</span>
                     @enderror
@@ -49,7 +51,9 @@
 
                 <div class="form-group">
                     <label for="start_time">Start Time</label>
-                    <input type="datetime-local" class="form-control" name="start_time" value="{{ old('start_time', \Carbon\Carbon::parse($event->start_time)->format('Y-m-d\TH:i')) }}" required>
+                    <input type="datetime-local" class="form-control" name="start_time"
+                        value="{{ old('start_time', \Carbon\Carbon::parse($event->start_time)->format('Y-m-d\TH:i')) }}"
+                        required>
                     @error('start_time')
                         <span class="text-danger">{{ $message }}</span>
                     @enderror
@@ -57,7 +61,9 @@
 
                 <div class="form-group">
                     <label for="end_time">End Time</label>
-                    <input type="datetime-local" class="form-control" name="end_time" value="{{ old('end_time', \Carbon\Carbon::parse($event->end_time)->format('Y-m-d\TH:i')) }}" required>
+                    <input type="datetime-local" class="form-control" name="end_time"
+                        value="{{ old('end_time', \Carbon\Carbon::parse($event->end_time)->format('Y-m-d\TH:i')) }}"
+                        required>
                     @error('end_time')
                         <span class="text-danger">{{ $message }}</span>
                     @enderror
@@ -66,18 +72,52 @@
                 <div class="form-group">
                     <label for="status">Status</label>
                     <select class="form-control" name="status" required>
-                        <option value="pending" {{ old('status', $event->status) == 'pending' ? 'selected' : '' }}>Pending</option>
-                        <option value="approved" {{ old('status', $event->status) == 'approved' ? 'selected' : '' }}>Approved</option>
-                        <option value="ongoing" {{ old('status', $event->status) == 'ongoing' ? 'selected' : '' }}>Ongoing</option>
-                        <option value="completed" {{ old('status', $event->status) == 'completed' ? 'selected' : '' }}>Completed</option>
+                        <option value="pending" {{ old('status', $event->status) == 'pending' ? 'selected' : '' }}>Pending
+                        </option>
+                        <option value="approved" {{ old('status', $event->status) == 'approved' ? 'selected' : '' }}>
+                            Approved</option>
+                        <option value="ongoing" {{ old('status', $event->status) == 'ongoing' ? 'selected' : '' }}>Ongoing
+                        </option>
+                        <option value="completed" {{ old('status', $event->status) == 'completed' ? 'selected' : '' }}>
+                            Completed</option>
                     </select>
                     @error('status')
                         <span class="text-danger">{{ $message }}</span>
                     @enderror
                 </div>
-                <button type="submit" class="btn btn-primary">Update Event</button>
+                <button type="submit" class="btnSubmit btn btn-primary">Update Event</button>
                 <a href="{{ route('admin.event') }}" class="btn btn-secondary">Cancel</a>
             </form>
         </div>
     </div>
+@endsection
+
+@section('scripts')
+    <script>
+        $(document).ready(function() {
+            $("#update-form").submit(function(event) {
+                event.preventDefault();
+
+                var form = $("#update-form")[0];
+                var data = new FormData(form);
+
+                $("#btnSubmit").prop("disable", true);
+
+                $.ajax({
+                    type: "POST",
+                    url: "{{ route('admin.event.update', ['id' => $event->id]) }}",
+                    data: data,
+                    processData: false,
+                    contentType: false,
+                    success: function(data) {
+                        window.location.href =
+                            "{{ route('admin.event') }}";
+                    },
+                    error: function(e) {
+                        console.log(e.responseText);
+                    }
+                });
+            });
+        });
+    </script>
 @endsection

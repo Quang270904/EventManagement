@@ -30,6 +30,31 @@ class UserController extends Controller
         ]);
     }
 
+    public function getUserById($id)
+    {
+        $user = User::with(['userDetail', 'role'])->findOrFail($id);
+
+        return response()->json([
+            'user' => $user,
+        ]);
+    }
+    public function formUserList(Request $request)
+    {
+        $user = Auth::user();
+        $role = $user->role;
+        $userDetail = $user->userDetail;
+        $users = User::with(['userDetail', 'role'])->get();
+        return view('admin.user.index', compact('user', 'userDetail', 'users','role'));
+    }
+
+    public function formUserDetail($id)
+    {
+        $user = Auth::user();
+        $userDetail = $user->userDetail;
+        $users = User::with(['userDetail', 'role'])->findOrFail($id);
+        return view('admin.user.userDetail', compact('user', 'userDetail', 'users'));
+    }
+
     public function createUser(UserRequest $request)
     {
         $validatedData = $request->validated();
@@ -109,14 +134,6 @@ class UserController extends Controller
         ]);
     }
 
-    public function formUserList(Request $request)
-    {
-        $user = Auth::user();
-        $userDetail = $user->userDetail;
-        $users = User::with(['userDetail', 'role'])->get();
-        return view('admin.user.index', compact('user', 'userDetail', 'users'));
-    }
-    
     public function showFormCreateUser()
     {
         $user = Auth::user();

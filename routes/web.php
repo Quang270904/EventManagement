@@ -34,20 +34,17 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
     Route::get('/user/search', [UserController::class, 'search'])->name('admin.user.search');
     Route::get('/user-list', [UserController::class, 'formUserList'])->name('admin.user');
     Route::get('/get-all-user', [UserController::class, 'getAllUser'])->name('admin.user.get');
+    Route::get('/user/{id}/show', [UserController::class, 'getUserById'])->name('admin.user.show');
+    Route::get('/user/{id}/detail', [UserController::class, 'formUserDetail'])->name('admin.user.detail');
     Route::get('user/showFormCreate', [UserController::class, 'showFormCreateUser'])->name('admin.user.create');
     Route::post('user/create', [UserController::class, 'createUser'])->name('admin.user.submit');
     Route::get('/user/{id}/edit', [UserController::class, 'showFormEditUser'])->name('admin.user.edit');
     Route::post('/user/{id}/update', [UserController::class, 'updateUser'])->name('admin.user.update');
     Route::post('/user/{id}/delete', [UserController::class, 'deleteUser'])->name('admin.user.delete');
 
-    Route::get('/eventManager-list', [EventManagerController::class, 'getAllEventManager'])->name('admin.eventManager');
-    Route::get('eventManager/showFormCreate', [EventManagerController::class, 'formCreateEventManager'])->name('admin.eventManager.create');
-    Route::post('eventManager/create', [EventManagerController::class, 'createEventManager'])->name('admin.eventManager.submit');
-    Route::get('/eventManager/{id}/edit', [EventManagerController::class, 'formEditEventManager'])->name('admin.eventManager.edit');
-    Route::post('/eventManager/{id}/update', [EventManagerController::class, 'updateEventManager'])->name('admin.eventManager.update');
-    Route::post('/eventManager/{id}/delete', [EventManagerController::class, 'deleteEventManager'])->name('admin.eventManager.delete');
-
-    Route::get('/event-list', [EventController::class, 'getAllEvent'])->name('admin.event');
+    Route::get('/event/search', [EventController::class, 'search'])->name('admin.event.search');
+    Route::get('/event-list', [EventController::class, 'formEventList'])->name('admin.event');
+    Route::get('/get-all-event', [EventController::class, 'getAllEvent'])->name('admin.event.get');
     Route::get('/event/{id}/detail', [EventController::class, 'eventDetail'])->name('admin.event.show');
     Route::get('event/showFormCreate', [EventController::class, 'formCreateEvent'])->name('admin.event.create');
     Route::post('event/create', [EventController::class, 'creatEvent'])->name('admin.event.submit');
