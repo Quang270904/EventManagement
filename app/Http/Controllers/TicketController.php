@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\CreateTicketRequest;
+use App\Http\Requests\TicketRequest;
 use App\Models\Event;
 use App\Models\Ticket;
 use Illuminate\Http\Request;
@@ -15,80 +17,60 @@ class TicketController extends Controller
 
     public function getAllTicket(Request $request)
     {
-        $user = Auth::user();
-        $userDetail = $user->userDetail;
-        $role = $user->role;
-
-        $tickets = Ticket::with('event')
-            ->when($request->input('search'), function ($query) use ($request) {
-                $query->where('ticket_type', 'like', '%' . $request->input('search') . '%')
-                    ->orWhere('price', 'like', '%' . $request->input('search') . '%');
-            })
+        $tickets = Ticket::with(['event'])
             ->paginate(10);
 
-        return view('admin.ticket.index', compact('tickets', 'userDetail', 'role','user'));
+        return response()->json([
+            'tickets' => $tickets->items(),
+            'pagination' => [
+                'current_page' => $tickets->currentPage(),
+                'last_page' => $tickets->lastPage(),
+                'total' => $tickets->total(),
+            ]
+        ]);
     }
 
-    public function formCreateTicket()
-    {
-        $user = Auth::user();
-        $userDetail = $user->userDetail;
-        $role = $user->role;
-
-        $events = Event::all();
-
-        return view('admin.ticket.createTicket', compact('userDetail', 'role', 'events'));
-    }
-
-    public function createTicket(Request $request)
+    public function createTicket(CreateTicketRequest $request)
     {
         try {
-            $validated = $request->validate([
-                'event_id' => 'required|exists:events,id',
-                'ticket_type' => 'required|string|max:255',
-                'price' => 'required|numeric',
-            ]);
+            $validated = $request->validated();
 
-            $ticket = Ticket::create([
-                'event_id' => $validated['event_id'],
-                'ticket_type' => $validated['ticket_type'],
-                'price' => $validated['price'],
-            ]);
+            $ticket = new Ticket();
+            $ticket->event_id = $validated['event_id'];
+            $ticket->ticket_type = $validated['ticket_type'];
+            $ticket->price = $validated['price'];
+            $ticket->save();
 
-            return redirect()->route('admin.ticket')->with('success', 'Ticket created successfully!');
+            return response()->json([
+                'success' => true,
+                'message' => 'Ticket created successfully!',
+                'ticket' => $ticket
+            ], 200);
         } catch (\Exception $e) {
             Log::error('Error creating ticket: ' . $e->getMessage());
-            return redirect()->route('admin.ticket.create')->with('error', 'Ticket creation failed!');
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Ticket creation failed! Please try again.'
+            ], 500);
         }
     }
 
-    public function formEditTicket($id)
+    public function updateTicket($id, TicketRequest $request)
     {
-        $user = Auth::user();
-        $userDetail = $user->userDetail;
-        $role = $user->role;
-
-        $ticket = Ticket::findOrFail($id);
-
-        return view('admin.ticket.editTicket', compact('userDetail', 'role', 'ticket'));
-    }
-
-    public function updateTicket($id, Request $request)
-    {
-        $validated = $request->validate([
-            'ticket_type' => 'required|string|in:regular,vip,discounted',
-            'price' => 'required|numeric|min:0',
-        ]);
-
         try {
             $ticket = Ticket::findOrFail($id);
 
-            $ticket->update([
-                'ticket_type' => $request->input('ticket_type'),
-                'price' => $request->input('price'),
-            ]);
+            $validated = $request->validated();
 
-            return redirect()->route('admin.ticket')->with('success', 'Ticket updated successfully');
+            $ticket->ticket_type = $validated['ticket_type'];
+            $ticket->price = $validated['price'];
+            $ticket->save();
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Event created successfully!',
+                'event' => $ticket,
+            ], 200);
         } catch (\Exception $e) {
             return redirect()->route('admin.ticket')->with('error', 'Failed to update ticket');
         }
@@ -100,11 +82,63 @@ class TicketController extends Controller
             $ticket = Ticket::findOrFail($id);
 
             $ticket->delete();
-
-            return redirect()->route('admin.ticket')->with('success', 'Ticket deleted successfully!');
+            return response()->json(['res' => 'Ticket deleted successfully!']);
         } catch (\Exception $e) {
             Log::error('Error deleting ticket: ' . $e->getMessage());
             return redirect()->route('admin.ticket')->with('error', 'Delete failed.');
         }
+    }
+
+    public function search(Request $request)
+    {
+        $search = $request->get('search', '');
+        $tickets = Ticket::with(['event'])
+            ->whereHas('event', function ($query) use ($search) {
+                $query->where('name', 'like', '%' . $search . "%");
+            })
+            ->orWhere('price', 'like', '%' . $search . '%')
+            ->orWhere('ticket_type', 'like', '%' . $search . '%')
+            ->paginate(10);
+
+        return response()->json([
+            'tickets' => $tickets->items(),
+            'pagination' => [
+                'current_page' => $tickets->currentPage(),
+                'last_page' => $tickets->lastPage(),
+                'total' => $tickets->total(),
+            ]
+        ]);
+    }
+
+    public function formTicketList(Request $request)
+    {
+        $user = Auth::user();
+        $role = $user->role;
+        $userDetail = $user->userDetail;
+        $tickets = Ticket::with(['event'])
+            ->paginate(10);
+        return view('admin.ticket.index', compact('user', 'userDetail', 'tickets', 'role'));
+    }
+
+    public function formCreateTicket()
+    {
+        $user = Auth::user();
+        $userDetail = $user->userDetail;
+        $role = $user->role;
+
+        $events = Event::all();
+
+        return view('admin.ticket.createTicket', compact('user', 'userDetail', 'role', 'events'));
+    }
+
+    public function formEditTicket($id)
+    {
+        $user = Auth::user();
+        $userDetail = $user->userDetail;
+        $role = $user->role;
+
+        $ticket = Ticket::findOrFail($id);
+
+        return view('admin.ticket.editTicket', compact('user', 'userDetail', 'role', 'ticket'));
     }
 }

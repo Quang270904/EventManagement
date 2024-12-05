@@ -87,8 +87,6 @@
 
         function updateEventTable(events, page = 1) {
 
-            let startTimeFormatted = moment(event.start_time).format('DD-MM-YYYY HH:mm:ss');
-            let endTimeFormatted = moment(event.end_time).format('DD-MM-YYYY HH:mm:ss');
             let tableBody = $('#eventTableBody');
             tableBody.empty();
             const offset = (page - 1) * 10;
@@ -96,6 +94,8 @@
 
             if (events.length > 0) {
                 events.forEach(function(event, index) {
+                    let startTimeFormatted = moment(event.start_time).format('DD-MM-YYYY HH:mm:ss');
+                    let endTimeFormatted = moment(event.end_time).format('DD-MM-YYYY HH:mm:ss');
                     let imageUrl = `{{ asset('storage/') }}/${event.image}`; // Đảm bảo đúng đường dẫn
                     let row = `<tr>
                 <td>${offset + index + 1}</td>
@@ -107,6 +107,7 @@
                 <td>${endTimeFormatted}</td>
                 <td>${event.status}</td>
                 <td>
+                     <a href="/admin/event/${event.id}/detail" class="btn btn-info btn-sm viewUserBtn">View</a>
                     <a href="/admin/event/${event.id}/edit" class="btn btn-warning btn-sm">Edit</a>
                     <a href="#" data-id="${event.id}" class="deleteEvent btn btn-danger btn-sm">Delete</a>
                 </td>

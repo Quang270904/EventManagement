@@ -5,7 +5,7 @@
         <div class="box-header">
             <h3 class="box-title">Create Ticket</h3>
         </div>
-        <form action="{{ route('admin.ticket.submit') }}" method="POST">
+        <form id="myForm">
             @csrf
             <div class="box-body">
                 <div class="form-group">
@@ -44,8 +44,55 @@
                 </div>
             </div>
             <div class="box-footer">
-                <button type="submit" class="btn btn-success">Create Ticket</button>
+                <button type="submit" class="btnSubmit btn btn-success">Create Ticket</button>
+                <a href="{{ route('admin.ticket') }}" class="btn btn-secondary">Cancel</a>
             </div>
         </form>
     </div>
+@endsection
+
+@section('scripts')
+    <script>
+        $(document).ready(function() {
+            $("#myForm").submit(function(event) {
+                event.preventDefault();
+
+                var form = $(this)[0];
+                var data = new FormData(form);
+
+                $("#btnSubmit").prop("disabled", true);
+
+                $.ajax({
+                    type: "POST",
+                    url: "{{ route('admin.ticket.submit') }}",
+                    data: data,
+                    processData: false,
+                    contentType: false,
+                    success: function(data) {
+                        console.log('ticket', data);
+                        // window.location.href =
+                        //     "{{ route('admin.user') }}";
+                        toastr.success("Ticket created successfully!");
+                    },
+                    error: function(xhr) {
+                        if (xhr.status === 422) {
+                            displayErrors(xhr.responseJSON.errors);
+                        } else {
+                            toastr.error("Something went wrong. Please try again.");
+                        }
+                        $("#btnSubmit").prop("disabled", false);
+                    }
+                });
+            });
+
+            function displayErrors(errors) {
+                $('.text-danger').remove();
+                $.each(errors, function(field, messages) {
+                    var input = $('input[name="' + field + '"], select[name="' + field + '"]');
+                    input.after('<span class="text-danger">' + messages[0] +
+                        '</span>');
+                });
+            }
+        });
+    </script>
 @endsection

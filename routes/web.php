@@ -34,7 +34,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
     Route::get('/user/search', [UserController::class, 'search'])->name('admin.user.search');
     Route::get('/user-list', [UserController::class, 'formUserList'])->name('admin.user');
     Route::get('/get-all-user', [UserController::class, 'getAllUser'])->name('admin.user.get');
-    Route::get('/user/{id}/show', [UserController::class, 'getUserById'])->name('admin.user.show');
+    // Route::get('/user/{id}/show', [UserController::class, 'getUserById'])->name('admin.user.show');
     Route::get('/user/{id}/detail', [UserController::class, 'formUserDetail'])->name('admin.user.detail');
     Route::get('user/showFormCreate', [UserController::class, 'showFormCreateUser'])->name('admin.user.create');
     Route::post('user/create', [UserController::class, 'createUser'])->name('admin.user.submit');
@@ -53,7 +53,9 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
     Route::post('/event/{id}/delete', [EventController::class, 'deleteEvent'])->name('admin.event.delete');
 
 
-    Route::get('/ticket-list', [TicketController::class, 'getAllTicket'])->name('admin.ticket');
+    Route::get('/ticket/search', [TicketController::class, 'search'])->name('admin.ticket.search');
+    Route::get('/ticket-list', [TicketController::class, 'formTicketList'])->name('admin.ticket');
+    Route::get('/get-all-ticket', [TicketController::class, 'getAllTicket'])->name('admin.ticket.get');
     Route::get('/ticket/create', [TicketController::class, 'formCreateTicket'])->name('admin.ticket.create');
     Route::post('/ticket', [TicketController::class, 'createTicket'])->name('admin.ticket.submit');
     Route::get('/ticket/{id}/edit', [TicketController::class, 'formEditTicket'])->name('admin.ticket.edit');

@@ -1,24 +1,35 @@
 @extends('admin.dashboard.home.layout')
 
-
-
 @section('contents')
     <div class="box">
         <div class="box-header">
-            <h3 class="box-title">User Details</h3>
+            <h3 class="box-title">User Detail: {{ $users->userDetail->full_name }}</h3>
         </div>
         <div class="box-body">
-            <!-- Thông tin chi tiết người dùng -->
-            <div id="userDetailsContainer">
-                <p><strong>Full Name:</strong> <span id="fullName">{{ $users->user_detail->full_name ?? 'N/A' }}</span></p>
-                <p><strong>Email:</strong> <span id="email">{{ $user->email ?? 'N/A' }}</span></p>
-                <p><strong>Phone:</strong> <span id="phone">{{ $user->user_detail->phone ?? 'N/A' }}</span></p>
-                <p><strong>Address:</strong> <span id="address">{{ $user->user_detail->address ?? 'N/A' }}</span></p>
-                <p><strong>Role:</strong> <span id="role">{{ $user->role->role_name ?? 'N/A' }}</span></p>
-            </div>
+            <table class="table">
+                <tr>
+                    <th>Full Name</th>
+                    <td>{{ $users->userDetail->full_name }}</td>
+                </tr>
+                <tr>
+                    <th>Address</th>
+                    <td>{{ $users->userDetail->address }}</td>
+                </tr>
+                <tr>
+                    <th>Email</th>
+                    <td>{{ $users->email }}</td>
+                </tr>
+                <tr>
+                    <th>Phone</th>
+                    <td>{{ $users->userDetail->phone }}</td>
+                </tr>
+                <tr>
+                    <th>Role</th>
+                    <td>{{ $users->role->role_name }}</td>
+                </tr>
+            </table>
 
-            <!-- Nút quay lại danh sách người dùng -->
-            <a href="{{ route('admin.user') }}" class="btn btn-primary">Back to List</a>
+            <a href="{{ route('admin.user') }}" class="btn btn-primary">Back to Users List</a>
         </div>
     </div>
 @endsection

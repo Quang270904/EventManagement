@@ -26,6 +26,17 @@
                 </div>
 
                 <div class="form-group">
+                    <input type="password" class="form-control" name="password" placeholder="Password">
+                    @error('password')
+                        <span class="text-danger">{{ $message }}</span>
+                    @enderror
+                </div>
+
+                <div class="form-group">
+                    <input type="password" class="form-control" name="password_confirmation" placeholder="Confirm Password">
+                </div>
+
+                <div class="form-group">
                     <input type="text" class="form-control" name="phone" placeholder="Phone Number"
                         value="{{ old('phone', $user->userDetail->phone) }}">
                     @error('phone')
@@ -99,11 +110,25 @@
                         window.location.href =
                             "{{ route('admin.user') }}";
                     },
-                    error: function(e) {
-                        console.log(e.responseText);
+                    error: function(xhr) {
+                        if (xhr.status === 422) {
+                            displayErrors(xhr.responseJSON.errors);
+                        } else {
+                            toastr.error("Something went wrong. Please try again.");
+                        }
+                        $("#btnSubmit").prop("disabled", false);
                     }
                 });
             });
+
+            function displayErrors(errors) {
+                $('.text-danger').remove();
+                $.each(errors, function(field, messages) {
+                    var input = $('input[name="' + field + '"], select[name="' + field + '"]');
+                    input.after('<span class="text-danger">' + messages[0] +
+                        '</span>');
+                });
+            }
         });
     </script>
 @endsection

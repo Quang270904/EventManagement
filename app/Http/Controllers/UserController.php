@@ -10,6 +10,7 @@ use App\Models\User;
 use App\Models\UserDetail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class UserController extends Controller
 {
@@ -30,30 +31,39 @@ class UserController extends Controller
         ]);
     }
 
-    public function getUserById($id)
-    {
-        $user = User::with(['userDetail', 'role'])->findOrFail($id);
+    // public function getUserById($id)
+    // {
+    //     $user = User::with(['userDetail', 'role'])->findOrFail($id);
 
-        return response()->json([
-            'user' => $user,
-        ]);
-    }
+    //     return response()->json([
+    //         'user' => $user,
+    //     ]);
+    // }
     public function formUserList(Request $request)
     {
         $user = Auth::user();
         $role = $user->role;
         $userDetail = $user->userDetail;
         $users = User::with(['userDetail', 'role'])->get();
-        return view('admin.user.index', compact('user', 'userDetail', 'users','role'));
+        return view('admin.user.index', compact('user', 'userDetail', 'users', 'role'));
     }
 
     public function formUserDetail($id)
     {
-        $user = Auth::user();
-        $userDetail = $user->userDetail;
-        $users = User::with(['userDetail', 'role'])->findOrFail($id);
-        return view('admin.user.userDetail', compact('user', 'userDetail', 'users'));
+        try {
+            $user = Auth::user();  
+            $userDetail = $user->userDetail;
+            $users = User::with(['userDetail', 'role'])->findOrFail($id);
+
+            // dd($users);
+
+            return view('admin.user.userDetail', compact('user', 'userDetail', 'users'));
+        } catch (\Exception $e) {
+            Log::error("Error fetching user details: " . $e->getMessage());
+            return response()->json(['error' => 'User not found or other error'], 500);
+        }
     }
+
 
     public function createUser(UserRequest $request)
     {
@@ -77,7 +87,7 @@ class UserController extends Controller
         return  response()->json(['res' => 'User create successfully!', 'user' => $user]);
     }
 
-    public function updateUser($id, UpdateUserRequest $request)
+    public function updateUser($id, UserRequest $request)
     {
         $validatedData = $request->validated();
 

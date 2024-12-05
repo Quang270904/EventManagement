@@ -136,7 +136,6 @@ class EventController extends Controller
         }
     }
 
-
     public function search(Request $request)
     {
         $search = $request->get('search', '');

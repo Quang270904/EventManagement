@@ -7,9 +7,6 @@
         </div>
         <div class="box-body">
             <div class="row">
-                <div class="form-group">
-                    <a href="{{ route('admin.ticket.create', $event->id) }}" class="btn btn-primary">Create Ticket</a>
-                </div>  
                 <div class="col-md-4">
                     <div class="form-group">
                         <label><strong>Event Name:</strong></label>
@@ -58,7 +55,7 @@
                         @if ($event->image)
                             <div>
                                 <img src="{{ Storage::url($event->image) }}" alt="Event Image" class="img-fluid"
-                                     style="width: 100%; height: auto;">
+                                    style="width: 100%; height: auto;">
                             </div>
                         @else
                             <p>No image available</p>

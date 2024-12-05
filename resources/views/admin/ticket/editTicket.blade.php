@@ -6,7 +6,7 @@
             <h3 class="box-title">Update Ticket</h3>
         </div>
 
-        <form action="{{ route('admin.ticket.update', $ticket->id) }}" method="POST">
+        <form id="update-form">
             @csrf
 
             <div class="box-body">
@@ -34,8 +34,39 @@
             </div>
 
             <div class="box-footer">
-                <button type="submit" class="btn btn-primary">Update Ticket</button>
+                <button type="submit" class="btnSubmit btn btn-primary">Update Ticket</button>
+                <a href="{{ route('admin.ticket') }}" class="btn btn-secondary">Cancel</a>
             </div>
         </form>
     </div>
+@endsection
+
+@section('scripts')
+    <script>
+        $(document).ready(function() {
+            $("#update-form").submit(function(event) {
+                event.preventDefault();
+
+                var form = $("#update-form")[0];
+                var data = new FormData(form);
+
+                $("#btnSubmit").prop("disable", true);
+
+                $.ajax({
+                    type: "POST",
+                    url: "{{ route('admin.ticket.update', ['id' => $ticket->id]) }}",
+                    data: data,
+                    processData: false,
+                    contentType: false,
+                    success: function(data) {
+                        window.location.href =
+                            "{{ route('admin.ticket') }}";
+                    },
+                    error: function(e) {
+                        console.log(e.responseText);
+                    }
+                });
+            });
+        });
+    </script>
 @endsection
