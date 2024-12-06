@@ -232,7 +232,6 @@
                     </li>
                 </ul>
             </li>
-            <!-- Control Sidebar Toggle Button -->
             <li class="dropdown language-dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
                     aria-expanded="false">
@@ -244,7 +243,6 @@
                     @endforeach
                 </ul>
             </li>
-
         </ul>
     </div>
 </nav>

@@ -68,7 +68,6 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
     Route::post('/event/{id}/update', [EventController::class, 'updateEvent'])->name('admin.event.update');
     Route::post('/event/{id}/delete', [EventController::class, 'deleteEvent'])->name('admin.event.delete');
 
-
     Route::get('/ticket/search', [TicketController::class, 'search'])->name('admin.ticket.search');
     Route::get('/ticket-list', [TicketController::class, 'formTicketList'])->name('admin.ticket');
     Route::get('/get-all-ticket', [TicketController::class, 'getAllTicket'])->name('admin.ticket.get');
@@ -83,7 +82,9 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
 Route::middleware(['auth', 'role:event_manager'])->prefix('event_manager')->group(function () {
     Route::get('/dashboard', [EventManagerController::class, 'index'])->name('event_manager.dashboard');
 
-    Route::get('/event-list', [EventController::class, 'getEventOfEventManager'])->name('event_manager.event');
+    Route::get('/event/search', [EventController::class, 'search'])->name('event_manager.event.search');
+    Route::get('/event-list', [EventController::class, 'formEventListOfManager'])->name('event_manager.event');
+    Route::get('/get-all-event', [EventController::class, 'getAllEventOfManager'])->name('event_manager.get');
     Route::get('/event/{id}/detail', [EventManagerController::class, 'eventDetail'])->name('event_manager.event.show');
     Route::get('event/showFormCreate', [EventManagerController::class, 'formCreateEvent'])->name('event_manager.event.create');
     Route::post('event/create', [EventManagerController::class, 'creatEvent'])->name('event_manager.event.submit');
@@ -91,6 +92,8 @@ Route::middleware(['auth', 'role:event_manager'])->prefix('event_manager')->grou
     Route::post('/event/{id}/update', [EventManagerController::class, 'updateEvent'])->name('event_manager.event.update');
     Route::post('/event/{id}/delete', [EventManagerController::class, 'deleteEvent'])->name('event_manager.event.delete');
 });
+
+
 
 //User
 Route::prefix('user')->group(function () {

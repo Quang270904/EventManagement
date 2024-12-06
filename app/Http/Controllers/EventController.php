@@ -191,36 +191,30 @@ class EventController extends Controller
     }
 
     //with  Role event_manager
-    public function getEventOfEventManager(Request $request)
+    public function getAllEventOfManager(Request $request)
     {
-        $search = $request->input('search');
         $user = Auth::user();
-        $userDetail = $user->userDetail;
-        $role = $user->role;
-
-        if ($role->role_name != 'event_manager') {
-            return redirect()->route('admin.dashboard')->with('error', 'You are not authorized to view these events');
-        }
 
         $events = Event::query();
 
         $events->where('user_id', $user->id);
 
-        if ($search) {
-            $events->where(function ($query) use ($search) {
-                $query->where('name', 'like', '%' . $search . '%')
-                    ->orWhere('description', 'like', '%' . $search . '%')
-                    ->orWhere('location', 'like', '%' . $search . '%');
-            });
-        }
+        $eventsData = $events->get();
 
-        $events = $events->paginate(10);
+        return response()->json(['events' => $eventsData]);
+    }
 
-        foreach ($events as $event) {
-            $event->start_time = Carbon::parse($event->start_time);
-            $event->end_time = Carbon::parse($event->end_time);
-        }
+    public function formEventListOfManager(Request $request)
+    {
+        $user = Auth::user();
+        $role = $user->role;
+        $userDetail = $user->userDetail;
+        $events = Event::query();
+        $events->where('user_id', $user->id);
 
-        return view('event_managers.event.index', compact('user', 'role', 'events', 'userDetail'));
+        $eventsData = $events->paginate(10);
+
+        // dd($eventsData);
+        return view('event_managers.event.index', compact('user', 'userDetail', 'eventsData', 'role'));
     }
 }

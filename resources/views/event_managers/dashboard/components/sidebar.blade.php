@@ -36,7 +36,7 @@
                 <ul class="treeview-menu">
                     <li>
                         <a href="{{ route('event_manager.event') }}"><i class="fa fa-circle-o"></i>
-                            Event
+                            {{__("sidebar.event")}}
                         </a>
                     </li>
                     {{-- <li>
