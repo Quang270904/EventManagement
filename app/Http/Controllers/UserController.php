@@ -29,7 +29,7 @@ class UserController extends Controller
             ]
         ]);
     }
-    
+
     public function formUserList(Request $request)
     {
         $user = Auth::user();
@@ -84,8 +84,12 @@ class UserController extends Controller
         $userDetail = $user->userDetail;
 
         $user->email = $validatedData['email'];
-        $user->password = $validatedData['password'] ?? $user->password;
         $user->role_id = $validatedData['role_id'];
+
+        if ($request->filled('password')) {
+            $user->password = bcrypt($validatedData['password']);
+        }
+
         $user->save();
 
         $userDetail->full_name = $validatedData['full_name'];

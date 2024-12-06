@@ -23,19 +23,23 @@ class UserRequest extends FormRequest
     public function rules()
     {
         $userId = $this->route('id');
-
-        return [
+        $rules = [
             'email' => 'required|email|unique:users,email,' . $userId,
-            'password' => 'required|min:6|confirmed',
-            'full_name' => ['required', 'string', new AlphaSpace, 'max:255'], // Sử dụng rule tùy chỉnh ở đây
+            'full_name' => ['required', 'string', new AlphaSpace, 'max:255'],
             'phone' => 'required|string|max:15',
             'address' => 'required|string|max:255',
             'gender' => 'required|string',
             'dob' => 'required|date',
             'role_id' => 'required|exists:roles,id',
-
         ];
+
+        if ($this->filled('password')) {
+            $rules['password'] = 'required|min:6|confirmed';
+        }
+
+        return $rules;
     }
+
 
     /**
      * Get the custom validation messages.
