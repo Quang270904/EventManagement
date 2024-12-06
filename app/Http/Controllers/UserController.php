@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\UpdateUserRequest;
 use App\Http\Requests\UserRequest;
 use App\Models\Role;
 use App\Models\User;
@@ -30,15 +29,7 @@ class UserController extends Controller
             ]
         ]);
     }
-
-    // public function getUserById($id)
-    // {
-    //     $user = User::with(['userDetail', 'role'])->findOrFail($id);
-
-    //     return response()->json([
-    //         'user' => $user,
-    //     ]);
-    // }
+    
     public function formUserList(Request $request)
     {
         $user = Auth::user();
@@ -51,19 +42,17 @@ class UserController extends Controller
     public function formUserDetail($id)
     {
         try {
-            $user = Auth::user();  
+            $user = Auth::user();
             $userDetail = $user->userDetail;
             $users = User::with(['userDetail', 'role'])->findOrFail($id);
 
             // dd($users);
-
             return view('admin.user.userDetail', compact('user', 'userDetail', 'users'));
         } catch (\Exception $e) {
             Log::error("Error fetching user details: " . $e->getMessage());
             return response()->json(['error' => 'User not found or other error'], 500);
         }
     }
-
 
     public function createUser(UserRequest $request)
     {
@@ -159,4 +148,13 @@ class UserController extends Controller
         $userDetail = $user->userDetail;
         return view('admin.user.editUser', compact('user', 'userDetail', 'roles'));
     }
+
+    // public function getUserById($id)
+    // {
+    //     $user = User::with(['userDetail', 'role'])->findOrFail($id);
+
+    //     return response()->json([
+    //         'user' => $user,
+    //     ]);
+    // }
 }

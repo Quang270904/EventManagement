@@ -84,7 +84,7 @@
                 </ul>
             </li>
             <!-- Notifications: style can be found in dropdown.less -->
-            <li class="dropdown notifications-menu">
+            {{-- <li class="dropdown notifications-menu">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                     <i class="fa fa-bell-o"></i>
                     <span class="label label-warning">10</span>
@@ -125,9 +125,10 @@
                     </li>
                     <li class="footer"><a href="#">View all</a></li>
                 </ul>
-            </li>
+            </li> --}}
+
             <!-- Tasks: style can be found in dropdown.less -->
-            <li class="dropdown tasks-menu">
+            {{-- <li class="dropdown tasks-menu">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                     <i class="fa fa-flag-o"></i>
                     <span class="label label-danger">9</span>
@@ -174,9 +175,8 @@
                                         <small class="pull-right">60%</small>
                                     </h3>
                                     <div class="progress xs">
-                                        <div class="progress-bar progress-bar-red" style="width: 60%"
-                                            role="progressbar" aria-valuenow="20" aria-valuemin="0"
-                                            aria-valuemax="100">
+                                        <div class="progress-bar progress-bar-red" style="width: 60%" role="progressbar"
+                                            aria-valuenow="20" aria-valuemin="0" aria-valuemax="100">
                                             <span class="sr-only">60% Complete</span>
                                         </div>
                                     </div>
@@ -191,8 +191,7 @@
                                     </h3>
                                     <div class="progress xs">
                                         <div class="progress-bar progress-bar-yellow" style="width: 80%"
-                                            role="progressbar" aria-valuenow="20" aria-valuemin="0"
-                                            aria-valuemax="100">
+                                            role="progressbar" aria-valuenow="20" aria-valuemin="0" aria-valuemax="100">
                                             <span class="sr-only">80% Complete</span>
                                         </div>
                                     </div>
@@ -205,7 +204,7 @@
                         <a href="#">View all tasks</a>
                     </li>
                 </ul>
-            </li>
+            </li> --}}
             <!-- User Account: style can be found in dropdown.less -->
             <li class="dropdown user user-menu">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">
@@ -234,9 +233,18 @@
                 </ul>
             </li>
             <!-- Control Sidebar Toggle Button -->
-            <li>
-                <a href="#" data-toggle="control-sidebar"><i class="fa fa-gears"></i></a>
+            <li class="dropdown language-dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+                    aria-expanded="false">
+                    Language <span class="caret"></span>
+                </a>
+                <ul class="dropdown-menu">
+                    @foreach (config('localization.locales') as $locale)
+                        <li><a href="{{ route('localization', $locale) }}">{{ __($locale) }}</a></li>
+                    @endforeach
+                </ul>
             </li>
+
         </ul>
     </div>
 </nav>

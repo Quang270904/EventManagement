@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Rules\AlphaSpace;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UserRequest extends FormRequest
@@ -24,9 +25,9 @@ class UserRequest extends FormRequest
         $userId = $this->route('id');
 
         return [
-            'email' => 'required|email|unique:users,email,' . $userId,  
+            'email' => 'required|email|unique:users,email,' . $userId,
             'password' => 'required|min:6|confirmed',
-            'full_name' => 'required|string|max:255',
+            'full_name' => ['required', 'string', new AlphaSpace, 'max:255'], // Sử dụng rule tùy chỉnh ở đây
             'phone' => 'required|string|max:15',
             'address' => 'required|string|max:255',
             'gender' => 'required|string',
@@ -55,6 +56,7 @@ class UserRequest extends FormRequest
             'dob.required' => 'Dob is required.',
             'role_id.required' => 'Role is required.',
             'role_id.exists' => 'The selected role is invalid.',
+            'full_name.alpha_space' => 'Full name may only contain letters and spaces.',
         ];
     }
 }

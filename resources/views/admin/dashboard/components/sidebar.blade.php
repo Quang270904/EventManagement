@@ -27,17 +27,17 @@
                 <ul class="treeview-menu">
                     <li class="active">
                         <a href="{{ route('admin.user') }}"><i class="fa fa-circle-o"></i>
-                            User
+                           {{__('sidebar.user')}}
                         </a>
                     </li>
                     <li>
                         <a href="{{ route('admin.event') }}"><i class="fa fa-circle-o"></i>
-                            Event
+                            {{__('sidebar.event')}}
                         </a>
                     </li>
                     <li>
                         <a href="{{ route('admin.ticket') }}"><i class="fa fa-circle-o"></i>
-                            Ticket
+                            {{__('sidebar.ticket')}}
                         </a>
                     </li>
                 </ul>

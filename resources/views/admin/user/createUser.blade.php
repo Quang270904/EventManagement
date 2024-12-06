@@ -55,8 +55,8 @@
 
                 <div class="form-group">
                     <select aria-placeholder="Gender" class="form-control" name="gender">
-                        <option value="Nam" {{ old('gender') }}>Nam</option>
-                        <option value="Nữ" {{ old('gender') }}>Nữ</option>
+                        <option value="Male" {{ old('gender') }}>Male</option>
+                        <option value="Female" {{ old('gender') }}>Female</option>
                         <option value="Other" {{ old('gender') }}>Other</option>
                     </select>
                     @error('gender')
