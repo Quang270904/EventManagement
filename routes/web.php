@@ -5,6 +5,7 @@ use App\Http\Controllers\EventController;
 use App\Http\Controllers\TicketController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\EventManagerController;
+use App\Http\Controllers\EventRegistrationController;
 use App\Http\Controllers\LocalizationController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserController;
@@ -99,11 +100,16 @@ Route::middleware(['auth', 'role:event_manager'])->prefix('event_manager')->grou
 Route::prefix('user')->group(function () {
     Route::get('/dashboard', [UserController::class, 'index'])->name('user.dashboard');
 
-    Route::get('/event-list', [UserController::class, 'getAllEvent'])->name('user.event');
-    Route::get('/event/{id}/detail', [UserController::class, 'eventDetail'])->name('user.event.show');
+
+    Route::get('/event/search', [EventController::class, 'searchEvent'])->name('user.event.search');
+    Route::get('/event-list', [EventController::class, 'formEventListOfUser'])->name('user.event');
+    Route::get('/get-all-event', [EventController::class, 'getAllEventOfUser'])->name('user.event.get');
+    Route::get('/event/{id}/detail', [EventController::class, 'eventDetailOfUser'])->name('user.event.show');
+    Route::get('/event/{id}/register', [EventRegistrationController::class, 'registerEvent'])->name('user.event.register');
+    Route::post('/event/{eventId}/register', [EventRegistrationController::class, 'processRegistration'])->name('user.event.processRegistration');
+    Route::post('/event/{eventId}/cancel', [EventRegistrationController::class, 'cancel'])->name('user.event.cancel');
+
 });
-
-
 
 Route::middleware(['auth', 'role:user'])->group(function () {
     Route::get('/user/dashboard', [UserController::class, 'index'])->name('user.dashboard');

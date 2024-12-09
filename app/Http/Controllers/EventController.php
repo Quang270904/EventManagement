@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\EventRequest;
 use App\Models\Event;
+use App\Models\EventRegistration;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -216,5 +217,100 @@ class EventController extends Controller
 
         // dd($eventsData);
         return view('event_managers.event.index', compact('user', 'userDetail', 'eventsData', 'role'));
+    }
+
+
+    //with role user
+
+    public function searchEvent(Request $request)
+    {
+        $search = $request->get('search', '');
+        $user = Auth::user(); 
+
+        $events = Event::with(['user', 'user.userDetail'])
+            ->whereHas('user.userDetail', function ($query) use ($search) {
+                $query->where('full_name', 'like', '%' . $search . '%');
+            })
+            ->orWhere('name', 'like', '%' . $search . '%')
+            ->orWhere('description', 'like', '%' . $search . '%')
+            ->orWhere('location', 'like', '%' . $search . '%')
+            ->paginate(10);
+
+        $registeredEventIds = EventRegistration::where('user_id', $user->id)
+            ->pluck('event_id')
+            ->toArray();
+
+        $eventsItems = $events->items();
+        $eventsItems = collect($eventsItems)->map(function ($event) use ($registeredEventIds) {
+            $event->is_registered = in_array($event->id, $registeredEventIds);
+            return $event;
+        });
+
+        return response()->json([
+            'events' => $eventsItems,
+            'pagination' => [
+                'current_page' => $events->currentPage(),
+                'last_page' => $events->lastPage(),
+                'total' => $events->total(),
+            ]
+        ]);
+    }
+
+    public function getAllEventOfUser()
+    {
+        $user = Auth::user();
+
+        $events = Event::with(['user', 'user.userDetail'])->paginate(10);
+
+        $registeredEventIds = EventRegistration::where('user_id', $user->id)
+            ->pluck('event_id')
+            ->toArray();
+
+        $eventsItems = $events->items();
+
+        $eventsItems = collect($eventsItems)->map(function ($event) use ($registeredEventIds) {
+            $event->is_registered = in_array($event->id, $registeredEventIds);
+            return $event;
+        });
+
+        return response()->json([
+            'events' => $eventsItems,
+            'pagination' => [
+                'current_page' => $events->currentPage(),
+                'last_page' => $events->lastPage(),
+                'total' => $events->total(),
+            ]
+        ]);
+    }
+
+    public function formEventListOfUser(Request $request)
+    {
+        $user = Auth::user();
+        $role = $user->role;
+        $userDetail = $user->userDetail;
+
+        $events = Event::with(['user', 'user.userDetail'])->paginate(10);
+
+        $registeredEventIds = EventRegistration::where('user_id', $user->id)
+            ->pluck('event_id')
+            ->toArray();
+
+        $events = $events->items();
+        $events = collect($events)->map(function ($event) use ($registeredEventIds) {
+            $event->is_registered = in_array($event->id, $registeredEventIds);
+            return $event;
+        });
+
+        return view('user.event.index', compact('user', 'userDetail', 'events', 'role'));
+    }
+
+    public function eventDetailOfUser($id)
+    {
+        $user = Auth::user();
+        $userDetail = $user->userDetail;
+        $role = $user->role;
+        $event = Event::findOrFail($id);
+
+        return view('user.event.event_detail', compact('event', 'user', 'userDetail', 'role'));
     }
 }

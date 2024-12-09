@@ -1,41 +1,26 @@
-{{-- Manager Event --}}
 @extends('user.dashboard.home.layout')
 
-@section('content')
+@section('contents')
     <div class="box">
         <div class="box-header">
             <h3 class="box-title">Management Event</h3>
         </div>
-        <div class="form-inline pull-left  w-100">
+
+        <div class="form-inline pull-left w-100">
             <div class="input-group">
                 <input id="search" type="text" name="search" class="form-control" placeholder="Search...">
-
             </div>
         </div>
 
         <div class="box-body">
             @if ($events->isEmpty())
-                <p class="text-center text-danger">Empty List Event</p>
+                <p class="text-center text-danger">No events available</p>
             @else
-                <table id="example1" class="table table-bordered table-striped">
-                    <thead>
-                        <tr>
-                            <th>#</th>
-                            <th>Image</th>
-                            <th>Name</th>
-                            <th>Description</th>
-                            <th>Location</th>
-                            <th>Start Time</th>
-                            <th>End Time</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody id="eventTableBody">
-
-                    </tbody>
-                </table>
+                <div class="row" id="eventContainer">
+                    {{-- Card for events will be loaded here --}}
+                </div>
                 <div class="box-footer clearfix">
-                    {{-- pagination --}}
+                    {{-- Pagination links --}}
                 </div>
             @endif
         </div>
@@ -44,32 +29,31 @@
 
 @section('scripts')
     <script>
-        // search event
         $(document).ready(function() {
-            loadUsers();
+            loadEvents();
 
             $('#search').on('keyup', function() {
                 let value = $(this).val();
-                loadUsers(value);
+                loadEvents(value);
             });
 
             $(document).on('click', '.pagination-link', function(event) {
                 event.preventDefault();
                 let page = $(this).data('page');
-                loadUsers($('#search').val(), page);
+                loadEvents($('#search').val(), page);
             });
         });
 
-        //get all User
         function loadEvents(search = '', page = 1) {
             $.ajax({
                 type: 'GET',
-                url: '{{ route('admin.event.search') }}',
+                url: '{{ route('user.event.search') }}',
                 data: {
                     search: search,
                     page: page
                 },
                 success: function(data) {
+                    console.log(data)
                     updateEventTable(data.events, page);
                     updatePagination(data.pagination);
                 },
@@ -79,33 +63,42 @@
             });
         }
 
+        // Update event table with cards
         function updateEventTable(events, page = 1) {
-            let tableBody = $('#eventTableBody');
-            tableBody.empty();
-            const offset = (page - 1) * 10;
-
+            let eventContainer = $('#eventContainer');
+            eventContainer.empty();
             if (events.length > 0) {
-                events.forEach(function(event, index) {
-                    let row = `<tr>
-                <td>${offset + index + 1}</td> 
-                <td>${event.user_detail.full_name}</td>
-                <td>${event.user_detail.address}</td>
-                <td>${event.email}</td>
-                <td>${event.user_detail.phone}</td>
-                <td>${event.role.role_name}</td>
-                <td>
-                    <a href="/admin/event/${event.id}/edit" class="btn btn-warning btn-sm">Edit</a>
-                    <a href="#" data-id="${event.id}" class="deleteData btn btn-danger btn-sm">Delete</a>
-                </td>
-            </tr>`;
-                    tableBody.append(row);
+                events.forEach(function(event) {
+                    let startTimeFormatted = moment(event.start_time).format('DD-MM-YYYY HH:mm:ss');
+                    let endTimeFormatted = moment(event.end_time).format('DD-MM-YYYY HH:mm:ss');
+                    let imageUrl = `{{ asset('storage/') }}/${event.image}`;
+
+                    let registerButton = event.is_registered ?
+                        `<button type="button" class="btnCancel btn-danger btn-sm" data-event-id="${event.id}">Cancel Registration</button>` :
+                        `<a href="/user/event/${event.id}/register" class="btnRegister btn-info btn-sm">Register</a>`;
+
+                    let card = `<div class="col-lg-3 col-md-4 col-sm-6 mb-3">
+                        <div class="card" style="width: 18rem;">
+                            <img src="${imageUrl}" class="card-img-top" alt="${event.name}">
+                            <div class="card-body">
+                                <h5 class="card-title">${event.name}</h5>
+                                <p class="card-text">${event.description}</p>
+                                <p class="text-muted"><small>Location: ${event.location}</small></p>
+                                <p class="text-muted"><small>Start: ${startTimeFormatted}</small></p>
+                                <p class="text-muted"><small>End: ${endTimeFormatted}</small></p>
+                                <a href="/user/event/${event.id}/detail" class="btn btn-primary btn-sm">View</a>
+                                ${registerButton}
+                            </div>
+                        </div>
+                    </div>`;
+                    eventContainer.append(card);
                 });
             } else {
-                tableBody.html("<tr><td colspan='7' class='text-center text-danger'>No events found</td></tr>");
+                eventContainer.html("<div class='col-12'><p class='text-center text-danger'>No events found</p></div>");
             }
         }
 
-        //pagination
+        // Update pagination
         function updatePagination(pagination) {
             let paginationContainer = $('.box-footer.clearfix');
             paginationContainer.empty();
@@ -116,47 +109,50 @@
                     .last_page;
 
                 let paginationHTML = `<ul class="pagination">
-            <li class="page-item ${pagination.current_page === 1 ? 'disabled' : ''}">
-                <a class="page-link pagination-link" href="#" data-page="${prevPage}">Previous</a>
-            </li>`;
+                    <li class="page-item ${pagination.current_page === 1 ? 'disabled' : ''}">
+                        <a class="page-link pagination-link" href="#" data-page="${prevPage}">Previous</a>
+                    </li>`;
 
                 for (let i = 1; i <= pagination.last_page; i++) {
                     paginationHTML += `<li class="page-item ${pagination.current_page === i ? 'active' : ''}">
-                <a class="page-link pagination-link" href="#" data-page="${i}">${i}</a>
-            </li>`;
+                        <a class="page-link pagination-link" href="#" data-page="${i}">${i}</a>
+                    </li>`;
                 }
 
                 paginationHTML += `<li class="page-item ${pagination.current_page === pagination.last_page ? 'disabled' : ''}">
-            <a class="page-link pagination-link" href="#" data-page="${nextPage}">Next</a>
-        </li></ul>`;
+                        <a class="page-link pagination-link" href="#" data-page="${nextPage}">Next</a>
+                    </li></ul>`;
 
                 paginationContainer.append(paginationHTML);
             }
         }
 
-        // delete user
-        // $(document).on('click', '.deleteData', function(event) {
-        //     event.preventDefault();
+        $(document).ready(function() {
+            $(document).on('click', '.btnCancel', function(event) {
+                event.preventDefault();
 
-        //     var userId = $(this).data('id');
+                let eventId = $(this).data('event-id');
+                let button = $(this);
 
-        //     if (confirm("Are you sure you want to delete this user?")) {
-        //         $.ajax({
-        //             type: "POST",
-        //             url: "/admin/user/" + userId + "/delete",
-        //             data: {
-        //                 _token: $("meta[name='csrf-token']").attr("content"),
-        //             },
-        //             success: function(response) {
-        //                 $('a[data-id="' + userId + '"]').closest('tr').remove();
-        //                 toastr.success("User deleted successfully!");
-        //             },
-        //             error: function(e) {
-        //                 console.log(e.responseText);
-        //                 alert("Error deleting the user.");
-        //             }
-        //         });
-        //     }
-        // });
+                $.ajax({
+                    type: 'POST',
+                    url: `/user/event/${eventId}/cancel`,
+                    data: {
+                        _token: $('meta[name="csrf-token"]').attr('content'),
+                    },
+                    success: function(response) {
+                        if (response.status === 'success') {
+
+                            toastr.success(response.message);
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        let errMessage = xhr.responseJSON ? xhr.responseJSON.message :
+                            'Something went wrong.';
+                        toastr.error(errMessage);
+                    }
+                });
+            });
+        });
     </script>
 @endsection

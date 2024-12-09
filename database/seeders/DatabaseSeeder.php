@@ -4,8 +4,7 @@ namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
+
 
 class DatabaseSeeder extends Seeder
 {
@@ -21,9 +20,9 @@ class DatabaseSeeder extends Seeder
         //     'email' => 'test@example.com',
         // ]);
 
-         DB::table('roles')->insert([
-            'role_name' => 'customer',
-        ]);
+        //  DB::table('roles')->insert([
+        //     'role_name' => 'customer',
+        // ]);
 
         //   DB::table('users')->insert([
         //     'email' => 'admin@gmail.com',
@@ -62,6 +61,15 @@ class DatabaseSeeder extends Seeder
         //     'event_id' => 1,
         //     'ticket_type' => 'regular',
         //     'price' => 23.4,    
+        //     'created_at' => now(),
+        //     'updated_at' => now(),
+        // ]);
+
+        // DB::table('event_registrations')->insert([
+        //     'user_id' => 2,
+        //     'event_id' => 2,
+        //     'ticket_id' => 1,
+        //     'status' => 'registered',
         //     'created_at' => now(),
         //     'updated_at' => now(),
         // ]);

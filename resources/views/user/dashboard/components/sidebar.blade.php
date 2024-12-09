@@ -39,11 +39,11 @@
                             Event
                         </a>
                     </li>
-                    {{-- <li>
+                    <li>
                         <a href="{{ route('admin.ticket') }}"><i class="fa fa-circle-o"></i>
-                            Ticket
+                            My Event
                         </a>
-                    </li> --}}
+                    </li>
                 </ul>
             </li>
         </ul>

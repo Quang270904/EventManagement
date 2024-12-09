@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html>
 
@@ -25,22 +24,24 @@
         <div class="content-wrapper">
             <!-- Content Header (Page header) -->
             <section class="content-header">
-                @yield('content-header')  
+                @yield('content-header')
             </section>
 
- 
+
             <section class="content">
-                @yield('content')  
+                @yield('contents')
             </section>
 
         </div>
         @include('user.dashboard.components.footer')
 
-       immediately after the control sidebar -->
+        immediately after the control sidebar -->
         <div class="control-sidebar-bg"></div>
     </div>
 
     @include('user.dashboard.components.script')
+    @yield('scripts')
+
 </body>
 
 </html>

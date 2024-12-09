@@ -15,7 +15,7 @@ class User extends Authenticatable
     /**
      * The attributes that are mass assignable.
      *
-    * @var array<int, string>
+     * @var array<int, string>
      */
     protected $fillable = [
         'email',
@@ -47,7 +47,7 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Role::class);
     }
-    
+
     public function userDetail()
     {
         return $this->hasOne(UserDetail::class);
@@ -57,4 +57,10 @@ class User extends Authenticatable
     {
         return $this->hasMany(Event::class);
     }
+
+    public function eventRegistration()
+    {
+        return $this->hasOne(EventRegistration::class);
+    }
+
 }

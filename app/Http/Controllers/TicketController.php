@@ -15,7 +15,7 @@ class TicketController extends Controller
 {
     public function __construct() {}
 
-    public function getAllTicket(Request $request)
+    public function getAllTicket()
     {
         $tickets = Ticket::with(['event'])
             ->paginate(10);

@@ -15,4 +15,9 @@ class Ticket extends Model
     {
         return $this->belongsTo(Event::class);
     }
+
+    public function eventRegistration()
+    {
+        return $this->hasOne(EventRegistration::class);
+    }
 }

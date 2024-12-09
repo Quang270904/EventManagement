@@ -16,6 +16,14 @@ class UserController extends Controller
 
     public function __construct() {}
 
+    public function index(Request $request)
+    {
+        $user = Auth::user();
+        $userDetail = $user->userDetail;
+        $role = $user->role;
+        return view('user.dashboard.home.layout', compact('user', 'userDetail', 'role'));
+    }
+
     public function getAllUser()
     {
         $users = User::with(['userDetail', 'role'])->paginate(10);

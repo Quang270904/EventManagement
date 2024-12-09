@@ -1,7 +1,7 @@
-@extends('event_managers.dashboard.home.layout')
+@extends('user.dashboard.home.layout')
 
 
-@section('content')
+@section('contents')
     <div class="box">
         <div class="box-header">
             <h3 class="box-title">Event Details</h3>
