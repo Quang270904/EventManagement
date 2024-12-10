@@ -65,7 +65,7 @@
     </div>
 @endsection
 
-@section('scripts')
+@push('scripts')
     <script>
         $(document).ready(function() {
             $("#myForm").submit(function(event) {
@@ -108,4 +108,4 @@
             }
         });
     </script>
-@endsection
+@endpush

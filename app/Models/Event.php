@@ -32,4 +32,9 @@ class Event extends Model
     {
         return $this->hasOne(EventRegistration::class);
     }
+
+    public function notification()
+    {
+        return $this->hasMany(Notification::class);
+    }
 }

@@ -7,6 +7,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\EventManagerController;
 use App\Http\Controllers\EventRegistrationController;
 use App\Http\Controllers\LocalizationController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserController;
 use App\Http\Middleware\Localization;
@@ -16,6 +17,13 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return redirect('en');
 });
+
+Route::get('/pusher', function () {
+    return view('pusher');
+});
+
+
+
 
 Route::get('/localization/{locale}', LocalizationController::class)->name('localization');
 
@@ -92,6 +100,8 @@ Route::middleware(['auth', 'role:event_manager'])->prefix('event_manager')->grou
     Route::get('/event/{id}/edit', [EventManagerController::class, 'formEditEventOfManager'])->name('event_manager.event.edit');
     Route::post('/event/{id}/update', [EventManagerController::class, 'updateEventOfManager'])->name('event_manager.event.update');
     Route::post('/event/{id}/delete', [EventManagerController::class, 'deleteEvent'])->name('event_manager.event.delete');
+    Route::get('/notification', [NotificationController::class, 'getAllNotification'])->name('event_manager.notification');
+    Route::get('/formNotification', [NotificationController::class, 'formNotification'])->name('event_manager.formNotification');
 });
 
 

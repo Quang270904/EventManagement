@@ -63,4 +63,8 @@ class User extends Authenticatable
         return $this->hasOne(EventRegistration::class);
     }
 
+    public function notification()
+    {
+        return $this->hasMany(Notification::class);
+    }
 }

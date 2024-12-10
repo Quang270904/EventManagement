@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\RegisterEvent;
 use App\Models\Event;
 use App\Models\EventRegistration;
+use App\Models\Notification;
 use App\Models\Ticket;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -65,9 +67,17 @@ class EventRegistrationController extends Controller
         $registration->ticket_id = $ticketId;
         $registration->status = 'registered';
         $registration->save();
+        broadcast(new RegisterEvent($user, $registration->event, $registration->created_at));
+
+        $notification = new Notification();
+        $notification->user_id = $user->id;
+        $notification->event_id = $eventId;
+        $notification->message = $user->userDetail->full_name . ' has registered for ' . $registration->event->name;
+        $notification->save();
 
         return response()->json(['status' => 'success', 'message' => 'You have successfully registered for the event!']);
     }
+
 
     public function cancel($eventId)
     {

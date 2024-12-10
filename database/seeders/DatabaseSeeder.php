@@ -4,7 +4,7 @@ namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-
+use Illuminate\Support\Facades\DB;
 
 class DatabaseSeeder extends Seeder
 {
@@ -73,5 +73,14 @@ class DatabaseSeeder extends Seeder
         //     'created_at' => now(),
         //     'updated_at' => now(),
         // ]);
+
+        DB::table('notifications')->insert([
+            'user_id' => 3,
+            'event_id' => 5,
+            'message' => 'hello nha',
+            'status' => 'read',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
     }
 }

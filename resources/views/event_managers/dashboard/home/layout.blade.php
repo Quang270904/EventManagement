@@ -14,7 +14,6 @@
                 <span class="logo-mini"><b>A</b>LT</span>
                 <span class="logo-lg"><b>Admin</b>LTE</span>
             </a>
-            <!-- Header Navbar: style can be found in header.less -->
             @include('event_managers.dashboard.components.navbar')
 
         </header>
@@ -35,7 +34,7 @@
     </div>
 
     @include('event_managers.dashboard.components.script')
-    @yield('scripts')
+    @stack('scripts') <!-- This will stack scripts from individual pages -->
 
 </body>
 

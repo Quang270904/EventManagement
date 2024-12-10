@@ -76,3 +76,12 @@
     text-align: center;
     margin-top: 10px;
 }
+
+/* Thời gian thông báo nhỏ và nằm góc phải */
+.notification-time {
+    font-size: 12px; /* Kích thước nhỏ */
+    color: #888; /* Màu xám */
+    float: right; /* Căn phải */
+    margin-top: -35px; /* Điều chỉnh vị trí của thời gian */
+    padding-right: 10px; /* Khoảng cách từ bên phải */
+}

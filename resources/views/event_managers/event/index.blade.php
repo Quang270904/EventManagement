@@ -45,9 +45,8 @@
     </div>
 @endsection
 
-@section('scripts')
+@push('scripts')
     <script>
-        // search event
         // search event
         $(document).ready(function() {
             loadEvents();
@@ -172,4 +171,4 @@
             }
         });
     </script>
-@endsection
+@endpush

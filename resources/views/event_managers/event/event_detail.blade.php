@@ -1,7 +1,7 @@
 @extends('event_managers.dashboard.home.layout')
 
 
-@section('contents')
+@push('scripts')
     <div class="box">
         <div class="box-header">
             <h3 class="box-title">Event Details</h3>
@@ -72,4 +72,4 @@
             </div>
         </div>
     </div>
-@endsection
+@endpush
