@@ -43,8 +43,7 @@
                 var ticketId = $("input[name='ticket_id']:checked").val();
 
                 if (!ticketId) {
-                    $('#response-message').html(
-                        '<div class="alert alert-danger">Please select a ticket type.</div>');
+                    toastr.error('Please select a ticket type.');
                     return;
                 }
 
@@ -56,13 +55,15 @@
                         ticket_id: ticketId
                     },
                     success: function(response) {
-                        toastr.success("Register event successfully!");
+                        toastr.success(response.message || "Register event successfully!");
+                          window.location.href =
+                           "{{ route('user.event') }}";
                     },
                     error: function(xhr, status, error) {
                         var errorMessage = xhr.responseJSON ? xhr.responseJSON.message :
                             'An error occurred. Please try again.';
-                        $('#response-message').html('<div class="alert alert-danger">' +
-                            errorMessage + '</div>');
+
+                        toastr.error(errorMessage);
                     }
                 });
             });

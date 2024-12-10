@@ -1,6 +1,5 @@
 @extends('user.dashboard.home.layout')
 
-
 @section('contents')
     <div class="box">
         <div class="box-header">
@@ -23,33 +22,21 @@
                     </div>
                     <div class="form-group">
                         <label><strong>Start Time:</strong></label>
-                        <p>
-                            {{ $event->start_time ? $event->start_time->format('H:i') : 'Not set' }}
-                        </p>
+                        <p>{{ $event->start_time ? $event->start_time->format('H:i') : 'Not set' }}</p>
                     </div>
                     <div class="form-group">
                         <label><strong>End Time:</strong></label>
-                        <p>
-                            {{ $event->end_time ? $event->end_time->format('H:i') : 'Not set' }}
-                        </p>
-                    </div>
-                    <div class="form-group">
-                        <label><strong>Status:</strong></label>
-                        <p>{{ ucfirst($event->status) }}</p>
+                        <p>{{ $event->end_time ? $event->end_time->format('H:i') : 'Not set' }}</p>
                     </div>
                 </div>
                 <div class="col-md-4">
                     <div class="form-group">
                         <label><strong>Start Date:</strong></label>
-                        <p>
-                            {{ $event->start_time ? $event->start_time->format('Y-m-d') : 'Not set' }}
-                        </p>
+                        <p>{{ $event->start_time ? $event->start_time->format('Y-m-d') : 'Not set' }}</p>
                     </div>
                     <div class="form-group">
                         <label><strong>End Date:</strong></label>
-                        <p>
-                            {{ $event->end_time ? $event->end_time->format('Y-m-d') : 'Not set' }}
-                        </p>
+                        <p>{{ $event->end_time ? $event->end_time->format('Y-m-d') : 'Not set' }}</p>
                     </div>
                     <div class="form-group">
                         <label><strong>Event Image:</strong></label>
@@ -64,6 +51,19 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Display registration status -->
+            @if ($isRegistered)
+                <div class="form-group">
+                    <p class="text-success"><strong>You have already registered for this event: {{ $event->name }}</strong>
+                    </p>
+                </div>
+            @else
+                <div class="form-group">
+                    <p class="text-warning"><strong>You haven't registered for this event yet.</strong></p>
+                </div>
+            @endif
+
             <div class="form-group">
                 <a href="{{ route('user.event') }}" class="btn btn-secondary">Back to Events</a>
             </div>

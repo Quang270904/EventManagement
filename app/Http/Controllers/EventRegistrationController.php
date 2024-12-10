@@ -43,13 +43,20 @@ class EventRegistrationController extends Controller
         Log::info('Ticket selected', ['ticket_id' => $ticketId, 'ticket_event_id' => $ticket ? $ticket->event_id : null, 'event_id' => $eventId]);
 
         if (!$ticket) {
-            // Log::error('Ticket not found', ['ticket_id' => $ticketId, 'event_id' => $eventId]);
             return response()->json(['status' => 'error', 'message' => 'Invalid ticket selection.'], 400);
         }
 
         if (intval($ticket->event_id) !== intval($eventId)) {
-            // Log::error('Invalid ticket selection', ['ticket_id' => $ticketId, 'ticket_event_id' => $ticket->event_id, 'event_id' => $eventId]);
             return response()->json(['status' => 'error', 'message' => 'This ticket is not valid for the selected event.'], 400);
+        }
+
+        $existingRegistration = EventRegistration::where('user_id', $user->id)
+            ->where('event_id', $eventId)
+            ->where('status', 'registered')
+            ->first();
+
+        if ($existingRegistration) {
+            return response()->json(['status' => 'error', 'message' => 'You have already registered for this event.'], 400);
         }
 
         $registration = new EventRegistration();
@@ -59,33 +66,29 @@ class EventRegistrationController extends Controller
         $registration->status = 'registered';
         $registration->save();
 
-        // Trả về phản hồi thành công
         return response()->json(['status' => 'success', 'message' => 'You have successfully registered for the event!']);
     }
 
     public function cancel($eventId)
     {
         $user = Auth::user();
-    
+
         $registration = EventRegistration::where('user_id', $user->id)
             ->where('event_id', $eventId)
             ->where('status', 'registered')
             ->first();
-    
+
         if (!$registration) {
             return response()->json(['status' => 'error', 'message' => 'You are not registered for this event.'], 400);
         }
-    
+
         $registration->status = 'cancelled';
         $registration->save();
 
-        $event = Event::find($eventId);
-        $event->is_registered = false; 
-    
         return response()->json([
             'status' => 'success',
             'message' => 'You have successfully cancelled your registration for the event.',
-            'event' => $event
+            'event_id' => $eventId
         ]);
     }
 }

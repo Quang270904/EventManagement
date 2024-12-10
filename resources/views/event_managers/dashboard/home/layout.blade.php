@@ -35,6 +35,8 @@
     </div>
 
     @include('event_managers.dashboard.components.script')
+    @yield('scripts')
+
 </body>
 
 </html>

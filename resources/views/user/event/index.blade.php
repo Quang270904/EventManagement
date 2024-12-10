@@ -17,10 +17,10 @@
                 <p class="text-center text-danger">No events available</p>
             @else
                 <div class="row" id="eventContainer">
-                    {{-- Card for events will be loaded here --}}
+                    {{-- Card --}}
                 </div>
                 <div class="box-footer clearfix">
-                    {{-- Pagination links --}}
+                    {{-- Pagination  --}}
                 </div>
             @endif
         </div>
@@ -67,30 +67,31 @@
         function updateEventTable(events, page = 1) {
             let eventContainer = $('#eventContainer');
             eventContainer.empty();
+
             if (events.length > 0) {
                 events.forEach(function(event) {
                     let startTimeFormatted = moment(event.start_time).format('DD-MM-YYYY HH:mm:ss');
                     let endTimeFormatted = moment(event.end_time).format('DD-MM-YYYY HH:mm:ss');
                     let imageUrl = `{{ asset('storage/') }}/${event.image}`;
 
-                    let registerButton = event.is_registered ?
+                    let registerButton = event.status_registration === 'registered' ?
                         `<button type="button" class="btnCancel btn-danger btn-sm" data-event-id="${event.id}">Cancel Registration</button>` :
                         `<a href="/user/event/${event.id}/register" class="btnRegister btn-info btn-sm">Register</a>`;
 
                     let card = `<div class="col-lg-3 col-md-4 col-sm-6 mb-3">
-                        <div class="card" style="width: 18rem;">
-                            <img src="${imageUrl}" class="card-img-top" alt="${event.name}">
-                            <div class="card-body">
-                                <h5 class="card-title">${event.name}</h5>
-                                <p class="card-text">${event.description}</p>
-                                <p class="text-muted"><small>Location: ${event.location}</small></p>
-                                <p class="text-muted"><small>Start: ${startTimeFormatted}</small></p>
-                                <p class="text-muted"><small>End: ${endTimeFormatted}</small></p>
-                                <a href="/user/event/${event.id}/detail" class="btn btn-primary btn-sm">View</a>
-                                ${registerButton}
-                            </div>
-                        </div>
-                    </div>`;
+                <div class="card" style="width: 18rem;">
+                    <img src="${imageUrl}" class="card-img-top" alt="${event.name}">
+                    <div class="card-body">
+                        <h5 class="card-title">${event.name}</h5>
+                        <p class="card-text">${event.description}</p>
+                        <p class="text-muted"><small>Location: ${event.location}</small></p>
+                        <p class="text-muted"><small>Start: ${startTimeFormatted}</small></p>
+                        <p class="text-muted"><small>End: ${endTimeFormatted}</small></p>
+                        <a href="/user/event/${event.id}/detail" class="btn btn-primary btn-sm">View</a>
+                        ${registerButton}
+                    </div>
+                </div>
+            </div>`;
                     eventContainer.append(card);
                 });
             } else {
@@ -142,8 +143,8 @@
                     },
                     success: function(response) {
                         if (response.status === 'success') {
-
                             toastr.success(response.message);
+                            loadEvents($('#search').val());
                         }
                     },
                     error: function(xhr, status, error) {

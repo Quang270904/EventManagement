@@ -68,7 +68,7 @@
         function loadEvents(search = '', page = 1) {
             $.ajax({
                 type: 'GET',
-                url: '{{ route('admin.event.search') }}',
+                url: '{{ route('event_manager.event.search') }}',
                 data: {
                     search: search,
                     page: page
@@ -94,9 +94,9 @@
 
             if (events.length > 0) {
                 events.forEach(function(event, index) {
+                    let imageUrl = `{{ asset('storage') }}/${event.image}`;
                     let startTimeFormatted = moment(event.start_time).format('DD-MM-YYYY HH:mm:ss');
                     let endTimeFormatted = moment(event.end_time).format('DD-MM-YYYY HH:mm:ss');
-                    let imageUrl = `{{ asset('storage/images') }}/${event.image}`;
                     let row = `<tr>
                 <td>${offset + index + 1}</td>
                 // <td><img src="${imageUrl}" alt="${event.name}" class="event-image"></td>

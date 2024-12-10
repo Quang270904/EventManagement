@@ -83,14 +83,14 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
 Route::middleware(['auth', 'role:event_manager'])->prefix('event_manager')->group(function () {
     Route::get('/dashboard', [EventManagerController::class, 'index'])->name('event_manager.dashboard');
 
-    Route::get('/event/search', [EventController::class, 'search'])->name('event_manager.event.search');
-    Route::get('/event-list', [EventController::class, 'formEventListOfManager'])->name('event_manager.event');
-    Route::get('/get-all-event', [EventController::class, 'getAllEventOfManager'])->name('event_manager.get');
+    Route::get('/event/search', [EventManagerController::class, 'searchEventOfManager'])->name('event_manager.event.search');
+    Route::get('/event-list', [EventManagerController::class, 'formEventListOfManager'])->name('event_manager.event');
+    Route::get('/get-all-event', [EventManagerController::class, 'getAllEventOfManager'])->name('event_manager.get');
     Route::get('/event/{id}/detail', [EventManagerController::class, 'eventDetail'])->name('event_manager.event.show');
-    Route::get('event/showFormCreate', [EventManagerController::class, 'formCreateEvent'])->name('event_manager.event.create');
-    Route::post('event/create', [EventManagerController::class, 'creatEvent'])->name('event_manager.event.submit');
-    Route::get('/event/{id}/edit', [EventManagerController::class, 'formEditEvent'])->name('event_manager.event.edit');
-    Route::post('/event/{id}/update', [EventManagerController::class, 'updateEvent'])->name('event_manager.event.update');
+    Route::get('event/showFormCreate', [EventManagerController::class, 'formCreateEventOfManager'])->name('event_manager.event.create');
+    Route::post('event/create', [EventManagerController::class, 'creatEventOfManager'])->name('event_manager.event.submit');
+    Route::get('/event/{id}/edit', [EventManagerController::class, 'formEditEventOfManager'])->name('event_manager.event.edit');
+    Route::post('/event/{id}/update', [EventManagerController::class, 'updateEventOfManager'])->name('event_manager.event.update');
     Route::post('/event/{id}/delete', [EventManagerController::class, 'deleteEvent'])->name('event_manager.event.delete');
 });
 
@@ -108,7 +108,6 @@ Route::prefix('user')->group(function () {
     Route::get('/event/{id}/register', [EventRegistrationController::class, 'registerEvent'])->name('user.event.register');
     Route::post('/event/{eventId}/register', [EventRegistrationController::class, 'processRegistration'])->name('user.event.processRegistration');
     Route::post('/event/{eventId}/cancel', [EventRegistrationController::class, 'cancel'])->name('user.event.cancel');
-
 });
 
 Route::middleware(['auth', 'role:user'])->group(function () {

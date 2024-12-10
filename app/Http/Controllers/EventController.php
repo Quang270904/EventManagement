@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\EventOfManagerRequest;
 use App\Http\Requests\EventRequest;
 use App\Models\Event;
 use App\Models\EventRegistration;
@@ -90,7 +91,6 @@ class EventController extends Controller
     public function updateEvent($id, EventRequest $request)
     {
         try {
-            $user = Auth::user();
             $event = Event::findOrFail($id);
 
             $validated = $request->validated();
@@ -106,7 +106,6 @@ class EventController extends Controller
                 $imagePath = $image->store('images', 'public');
             }
 
-            $event->user_id = $user->id;
             $event->name = $validated['name'];
             $event->description = $validated['description'];
             $event->location = $validated['location'];
@@ -191,63 +190,39 @@ class EventController extends Controller
         return view('admin.event.editEvent', compact('user', 'userDetail', 'role', 'event'));
     }
 
-    //with  Role event_manager
-    public function getAllEventOfManager(Request $request)
-    {
-        $user = Auth::user();
-
-        $events = Event::query();
-
-        $events->where('user_id', $user->id);
-
-        $eventsData = $events->get();
-
-        return response()->json(['events' => $eventsData]);
-    }
-
-    public function formEventListOfManager(Request $request)
-    {
-        $user = Auth::user();
-        $role = $user->role;
-        $userDetail = $user->userDetail;
-        $events = Event::query();
-        $events->where('user_id', $user->id);
-
-        $eventsData = $events->paginate(10);
-
-        // dd($eventsData);
-        return view('event_managers.event.index', compact('user', 'userDetail', 'eventsData', 'role'));
-    }
-
 
     //with role user
 
     public function searchEvent(Request $request)
     {
         $search = $request->get('search', '');
-        $user = Auth::user(); 
+        $user = Auth::user();
 
         $events = Event::with(['user', 'user.userDetail'])
-            ->whereHas('user.userDetail', function ($query) use ($search) {
-                $query->where('full_name', 'like', '%' . $search . '%');
+            ->where('status', 'approved')
+            ->where(function ($query) use ($search) {
+                $query->whereHas('user.userDetail', function ($query) use ($search) {
+                    $query->where('full_name', 'like', '%' . $search . '%');
+                })
+                    ->orWhere('name', 'like', '%' . $search . '%')
+                    ->orWhere('description', 'like', '%' . $search . '%')
+                    ->orWhere('location', 'like', '%' . $search . '%');
             })
-            ->orWhere('name', 'like', '%' . $search . '%')
-            ->orWhere('description', 'like', '%' . $search . '%')
-            ->orWhere('location', 'like', '%' . $search . '%')
             ->paginate(10);
 
-        $registeredEventIds = EventRegistration::where('user_id', $user->id)
+        $registeredEvents = EventRegistration::where('user_id', $user->id)
+            ->where('status', 'registered')
             ->pluck('event_id')
             ->toArray();
 
         $eventsItems = $events->items();
-        $eventsItems = collect($eventsItems)->map(function ($event) use ($registeredEventIds) {
-            $event->is_registered = in_array($event->id, $registeredEventIds);
+        $eventsItem = collect($eventsItems)->map(function ($event) use ($registeredEvents) {
+            $event->status_registration = in_array($event->id, $registeredEvents) ? 'registered' : 'canceled';
             return $event;
         });
 
         return response()->json([
-            'events' => $eventsItems,
+            'events' => $eventsItem,
             'pagination' => [
                 'current_page' => $events->currentPage(),
                 'last_page' => $events->lastPage(),
@@ -258,20 +233,11 @@ class EventController extends Controller
 
     public function getAllEventOfUser()
     {
-        $user = Auth::user();
-
-        $events = Event::with(['user', 'user.userDetail'])->paginate(10);
-
-        $registeredEventIds = EventRegistration::where('user_id', $user->id)
-            ->pluck('event_id')
-            ->toArray();
+        $events = Event::where('status', 'approved')
+            ->with(['user', 'user.userDetail'])
+            ->paginate(10);
 
         $eventsItems = $events->items();
-
-        $eventsItems = collect($eventsItems)->map(function ($event) use ($registeredEventIds) {
-            $event->is_registered = in_array($event->id, $registeredEventIds);
-            return $event;
-        });
 
         return response()->json([
             'events' => $eventsItems,
@@ -289,18 +255,11 @@ class EventController extends Controller
         $role = $user->role;
         $userDetail = $user->userDetail;
 
-        $events = Event::with(['user', 'user.userDetail'])->paginate(10);
+        $events = Event::where('status', 'approved')
+            ->with(['user', 'user.userDetail'])
+            ->paginate(10);
 
-        $registeredEventIds = EventRegistration::where('user_id', $user->id)
-            ->pluck('event_id')
-            ->toArray();
-
-        $events = $events->items();
-        $events = collect($events)->map(function ($event) use ($registeredEventIds) {
-            $event->is_registered = in_array($event->id, $registeredEventIds);
-            return $event;
-        });
-
+        // dd($events);
         return view('user.event.index', compact('user', 'userDetail', 'events', 'role'));
     }
 
@@ -311,6 +270,11 @@ class EventController extends Controller
         $role = $user->role;
         $event = Event::findOrFail($id);
 
-        return view('user.event.event_detail', compact('event', 'user', 'userDetail', 'role'));
+        $isRegistered = EventRegistration::where('event_id', $event->id)
+            ->where('user_id', $user->id)
+            ->where('status', 'registered')
+            ->exists();
+
+        return view('user.event.event_detail', compact('event', 'user', 'userDetail', 'role', 'isRegistered'));
     }
 }
