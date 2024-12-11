@@ -27,7 +27,7 @@ Route::get('/pusher', function () {
 
 Route::get('/localization/{locale}', LocalizationController::class)->name('localization');
 
-Route::middleware([Localization::class]) // Apply the Localization middleware
+Route::middleware([Localization::class]) 
     ->group(function () {
 
         // Home route
@@ -102,6 +102,7 @@ Route::middleware(['auth', 'role:event_manager'])->prefix('event_manager')->grou
     Route::post('/event/{id}/delete', [EventManagerController::class, 'deleteEvent'])->name('event_manager.event.delete');
     Route::get('/notification', [NotificationController::class, 'getAllNotification'])->name('event_manager.notification');
     Route::get('/formNotification', [NotificationController::class, 'formNotification'])->name('event_manager.formNotification');
+    Route::post('/notification/update', [NotificationController::class, 'updateStatus'])->name('event_manager.updateNotification');
 });
 
 
@@ -118,6 +119,8 @@ Route::prefix('user')->group(function () {
     Route::get('/event/{id}/register', [EventRegistrationController::class, 'registerEvent'])->name('user.event.register');
     Route::post('/event/{eventId}/register', [EventRegistrationController::class, 'processRegistration'])->name('user.event.processRegistration');
     Route::post('/event/{eventId}/cancel', [EventRegistrationController::class, 'cancel'])->name('user.event.cancel');
+    Route::get('/my-event', [EventRegistrationController::class, 'formEventRegisterd'])->name('user.event.showEvent');
+    Route::get('/get-all-eventRegistration', [EventRegistrationController::class, 'getAllEventRegisterd'])->name('user.event.getEventRegistered');
 });
 
 Route::middleware(['auth', 'role:user'])->group(function () {

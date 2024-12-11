@@ -4,6 +4,8 @@
 <head>
     @include('user.dashboard.components.header')
 
+    <script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
+    
 </head>
 
 <body class="hold-transition skin-blue sidebar-mini">

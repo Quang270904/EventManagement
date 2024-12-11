@@ -67,7 +67,7 @@ class EventRegistrationController extends Controller
         $registration->ticket_id = $ticketId;
         $registration->status = 'registered';
         $registration->save();
-        broadcast(new RegisterEvent($user, $registration->event, $registration->created_at));
+        event(new RegisterEvent($user, $registration->event, $registration->created_at));
 
         $notification = new Notification();
         $notification->user_id = $user->id;
@@ -77,7 +77,6 @@ class EventRegistrationController extends Controller
 
         return response()->json(['status' => 'success', 'message' => 'You have successfully registered for the event!']);
     }
-
 
     public function cancel($eventId)
     {
@@ -99,6 +98,43 @@ class EventRegistrationController extends Controller
             'status' => 'success',
             'message' => 'You have successfully cancelled your registration for the event.',
             'event_id' => $eventId
+        ]);
+    }
+
+
+    // EventRegistrationController.php
+    public function formEventRegisterd()
+    {
+        $user = Auth::user();
+        $role = $user->role;
+        $userDetail = $user->userDetail;
+
+        // Trả về view mà không lấy dữ liệu sự kiện, vì AJAX sẽ lo phần này
+        return view('user.event.get_event_registered', compact('user', 'role', 'userDetail'));
+    }
+
+    public function getAllEventRegisterd(Request $request)
+    {
+        $user = Auth::user();
+
+        $registrations = EventRegistration::with('event')
+            ->where('user_id', $user->id)
+            ->where('status', 'registered')
+            ->when($request->search, function ($query) use ($request) {
+                return $query->whereHas('event', function ($query) use ($request) {
+                    $query->where('name', 'like', '%' . $request->search . '%');
+                });
+            })
+            ->paginate(10);
+
+        return response()->json([
+            'status' => 'success',
+            'events' => $registrations->items(),
+            'pagination' => [
+                'total' => $registrations->total(),
+                'current_page' => $registrations->currentPage(),
+                'last_page' => $registrations->lastPage(),
+            ],
         ]);
     }
 }

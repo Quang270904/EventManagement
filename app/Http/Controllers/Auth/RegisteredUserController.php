@@ -22,7 +22,7 @@ class RegisteredUserController extends Controller
     {
         $roles = Role::whereNotIn('role_name', ['admin', 'event_manager'])->get();
 
-        return view('auth.register',compact('roles'));
+        return view('auth.register', compact('roles'));
     }
 
     /**

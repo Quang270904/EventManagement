@@ -40,7 +40,7 @@
                         </a>
                     </li>
                     <li>
-                        <a href="{{ route('admin.ticket') }}"><i class="fa fa-circle-o"></i>
+                        <a href="{{ route('user.event.showEvent') }}"><i class="fa fa-circle-o"></i>
                             My Event
                         </a>
                     </li>

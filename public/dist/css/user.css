@@ -77,6 +77,8 @@
     margin-top: 10px;
 }
 
+
+
 /* Thời gian thông báo nhỏ và nằm góc phải */
 .notification-time {
     font-size: 12px; /* Kích thước nhỏ */
@@ -85,3 +87,16 @@
     margin-top: -35px; /* Điều chỉnh vị trí của thời gian */
     padding-right: 10px; /* Khoảng cách từ bên phải */
 }
+/* Định dạng cho dấu tích */
+.checkmark {
+    right: 10px; /* Đặt dấu tích ở góc phải */
+    bottom: 10px; 
+    font-size: 18px;
+    color: #000000; 
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: -50px; 
+}
+
+
+

@@ -1,5 +1,4 @@
 <nav class="navbar navbar-static-top">
-    <!-- Sidebar toggle button-->
     <a href="#" class="sidebar-toggle" data-toggle="push-menu" role="button">
         <span class="sr-only">Toggle navigation</span>
     </a>
@@ -59,50 +58,90 @@
 </nav>
 
 @push('scripts')
-<script>
-    $(document).ready(function() {
-        console.log("Document loaded, making AJAX request...");
+    <script>
+        $(document).ready(function() {
+            console.log("Document loaded, making AJAX request...");
 
-        $.ajax({
-            url: '{{ route('event_manager.notification') }}',
-            method: 'GET',
-            success: function(response) {
-                console.log("AJAX Success:", response); 
-                var notifications = response.notifications;
-                var notificationsMenu = $('#notifications-menu ul');
-                var notificationCount = notifications.length;
+            $.ajax({
+                url: '{{ route('event_manager.notification') }}',
+                method: 'GET',
+                success: function(response) {
+                    console.log("AJAX Success:", response);
+                    var notifications = response.notifications;
+                    var notificationsMenu = $('#notifications-menu ul');
+                    var notificationCount = notifications.length;
 
-                $('#notification-count').text(notificationCount);
+                    // Set notification count in navbar
+                    $('#notification-count').text(notificationCount);
 
-                var headerText = 'You have ' + notificationCount + ' notifications';
-                $('#notifications-menu .header').text(headerText);
+                    // Update header text
+                    var headerText = 'You have ' + notificationCount + ' notifications';
+                    $('#notifications-menu .header').text(headerText);
 
-                notificationsMenu.empty();
+                    notificationsMenu.empty();
 
-                if (notificationCount === 0) {
-                    notificationsMenu.append('<li><a href="#">No new notifications</a></li>');
+                    if (notificationCount === 0) {
+                        notificationsMenu.append('<li><a href="#">No new notifications</a></li>');
+                    }
+
+                    notifications.forEach(function(notification) {
+                        var date = new Date(notification.created_at);
+                        var formattedDate = date.toLocaleDateString('en-GB');
+
+                        notificationsMenu.append(`
+                            <li data-notification-id="${notification.id}">
+                                <a href="#">
+                                    <i class="fa fa-bell text-aqua"></i> 
+                                    ${notification.message}
+                                    <span class="notification-time">${formattedDate}</span>
+                                </a>
+                                <span class="checkmark">&#10004;</span>
+                            </li>
+                        `);
+                    });
+
+                    // Handle click on checkmark (mark as read)
+                    $('.checkmark').on('click', function() {
+                        var $notificationLi = $(this).closest('li');
+                        var notificationId = $notificationLi.data('notification-id');
+
+                        $.ajax({
+                            url: '{{ route('event_manager.updateNotification') }}',
+                            method: 'POST',
+                            data: {
+                                notification_id: notificationId,
+                                _token: '{{ csrf_token() }}'
+                            },
+                            success: function(response) {
+                                if (response.success) {
+                                    console.log('Notification marked as read');
+
+                                    $notificationLi.fadeOut(function() {
+                                        $(this).remove();
+                                        updateNotificationCount();
+                                    });
+                                } else {
+                                    console.error('Failed to update notification status');
+                                }
+                            },
+                            error: function(xhr, status, error) {
+                                console.error('AJAX Error:', status, error);
+                            }
+                        });
+                    });
+                },
+                error: function(xhr, status, error) {
+                    console.error('AJAX Error:', status, error);
                 }
+            });
 
-                notifications.forEach(function(notification) {
-                    var date = new Date(notification.created_at);
-                    var formattedDate = date.toLocaleDateString('en-GB'); 
-
-                    notificationsMenu.append(`
-                        <li>
-                            <a href="#">
-                                <i class="fa fa-bell text-aqua"></i> 
-                                ${notification.message}
-                                <span class="notification-time">${formattedDate}</span> <!-- Thời gian ở góc phải -->
-                            </a>
-                        </li>
-                    `);
-                });
-            },
-            error: function(xhr, status, error) {
-                console.error('AJAX Error:', status, error); 
+            // Function to update notification count and header text
+            function updateNotificationCount() {
+                var notificationCount = $('#notifications-menu ul li').length;
+                $('#notification-count').text(notificationCount);
+                var headerText = notificationCount === 0 ? 'You have no notifications' : 'You have ' + notificationCount + ' notifications';
+                $('#notifications-menu .header').text(headerText);
             }
         });
-    });
-</script>
+    </script>
 @endpush
-
