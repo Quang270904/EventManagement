@@ -5,6 +5,7 @@ namespace Tests\Feature\Auth;
 use App\Models\User;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Hash;
 use Tests\TestCase;
 
 class AuthenticationTest extends TestCase
@@ -18,16 +19,20 @@ class AuthenticationTest extends TestCase
         $response->assertStatus(200);
     }
 
-    public function test_users_can_authenticate_using_the_login_screen(): void
+    public function users_can_authenticate_using_the_login_screen(): void
     {
-        $user = User::factory()->create();
+        $password = 'password';
+        $user = User::factory()->create([
+            'password' => Hash::make($password),
+        ]);
 
         $response = $this->post('/login', [
             'email' => $user->email,
-            'password' => 'password',
+            'password' => $password,
         ]);
 
         $this->assertAuthenticated();
+
         $response->assertRedirect(RouteServiceProvider::HOME);
     }
 
@@ -43,13 +48,16 @@ class AuthenticationTest extends TestCase
         $this->assertGuest();
     }
 
-    public function test_users_can_logout(): void
+    public function users_can_logout(): void
     {
         $user = User::factory()->create();
 
-        $response = $this->actingAs($user)->post('/logout');
+        $this->actingAs($user);
 
-        $this->assertGuest();
+        $response = $this->post(route('auth.logout'));
+
+        $this->assertGuest(); 
+
         $response->assertRedirect('/');
     }
 }

@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\EventOfManagerRequest;
 use App\Http\Requests\EventRequest;
 use App\Models\Event;
 use App\Models\EventRegistration;
