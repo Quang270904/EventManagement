@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\NotificationRequest;
 use App\Models\Notification;
-use GuzzleHttp\Psr7\Request;
 
 class NotificationController extends Controller
 {

@@ -80,6 +80,32 @@
 
 
 /* Thời gian thông báo nhỏ và nằm góc phải */
+/* Container cho thông báo */
+.notification-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 15px;
+    cursor: pointer;
+}
+
+/* Phần a chứa icon và message */
+.notification-item a {
+    display: flex;
+    align-items: center;
+    flex: 1;
+}
+
+/* Nút tích nhỏ (checkmark) */
+.checkmark {
+    font-size: 18px;
+    color: #4CAF50;
+    cursor: pointer;
+    margin-left: 10px;
+    align-self: center; /* Canh giữa theo chiều dọc */
+}
+
+/* Thời gian của thông báo */
 .notification-time {
     font-size: 12px; /* Kích thước nhỏ */
     color: #888; /* Màu xám */
@@ -88,15 +114,3 @@
     padding-right: 10px; /* Khoảng cách từ bên phải */
 }
 /* Định dạng cho dấu tích */
-.checkmark {
-    right: 10px; /* Đặt dấu tích ở góc phải */
-    bottom: 10px; 
-    font-size: 18px;
-    color: #000000; 
-    font-weight: bold;
-    cursor: pointer;
-    margin-top: -50px; 
-}
-
-
-

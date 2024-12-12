@@ -21,12 +21,10 @@ class EventControllerTest extends TestCase
     {
         parent::setUp();
 
-        // Create roles for the test
         $adminRole = Role::create(['role_name' => 'admin']);
         $eventManagerRole = Role::create(['role_name' => 'event_manager']);
         $userRole = Role::create(['role_name' => 'user']);
 
-        // Create users with different roles
         $this->admin = User::create([
             'email' => 'admin@example.com',
             'password' => Hash::make('password'),
@@ -46,7 +44,6 @@ class EventControllerTest extends TestCase
         ]);
     }
 
-    // Test: Create Event Success as Admin
     public function test_create_event_success_as_admin()
     {
         $this->actingAs($this->admin);

@@ -99,12 +99,9 @@ Route::middleware(['auth', 'role:event_manager'])->prefix('event_manager')->grou
     Route::post('/notification/update', [NotificationController::class, 'updateStatus'])->name('event_manager.updateNotification');
 });
 
-
-
 //User
 Route::prefix('user')->group(function () {
     Route::get('/dashboard', [UserController::class, 'index'])->name('user.dashboard');
-
 
     Route::get('/event/search', [EventController::class, 'searchEvent'])->name('user.event.search');
     Route::get('/event-list', [EventController::class, 'formEventListOfUser'])->name('user.event');

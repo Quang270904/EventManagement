@@ -7,7 +7,7 @@
         <ul class="nav navbar-nav">
 
             <li class="dropdown notifications-menu">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                <a href="http://127.0.0.1:8000/event_manager/event-list" class="dropdown-toggle" data-toggle="dropdown">
                     <i class="fa fa-bell-o"></i>
                     <span id="notification-count" class="label label-warning">0</span>
                     <!-- Hiển thị số lượng thông báo -->
@@ -66,12 +66,11 @@
                 url: '{{ route('event_manager.notification') }}',
                 method: 'GET',
                 success: function(response) {
-                    console.log("AJAX Success:", response);
+                    console.log(" Success:", response);
                     var notifications = response.notifications;
                     var notificationsMenu = $('#notifications-menu ul');
                     var notificationCount = notifications.length;
 
-                    // Set notification count in navbar
                     $('#notification-count').text(notificationCount);
 
                     // Update header text
@@ -85,19 +84,19 @@
                     }
 
                     notifications.forEach(function(notification) {
-                        var date = new Date(notification.created_at);
-                        var formattedDate = date.toLocaleDateString('en-GB');
+                        var formattedDate = moment(notification.created_at).format(
+                            'DD-MM-YYYY HH:mm');
 
                         notificationsMenu.append(`
-                            <li data-notification-id="${notification.id}">
-                                <a href="#">
-                                    <i class="fa fa-bell text-aqua"></i> 
-                                    ${notification.message}
-                                    <span class="notification-time">${formattedDate}</span>
-                                </a>
-                                <span class="checkmark">&#10004;</span>
-                            </li>
-                        `);
+                        <li data-notification-id="${notification.id}" class="notification-item">
+                            <a href="#">
+                                <i class="fa fa-bell text-aqua"></i> 
+                                ${notification.message}
+                                <span class="notification-time">${formattedDate}</span>
+                            </a>
+                            <span class="checkmark">&#10004;</span>
+                        </li>
+                    `);
                     });
 
                     // Handle click on checkmark (mark as read)
@@ -121,7 +120,8 @@
                                         updateNotificationCount();
                                     });
                                 } else {
-                                    console.error('Failed to update notification status');
+                                    console.error(
+                                        'Failed to update notification status');
                                 }
                             },
                             error: function(xhr, status, error) {
@@ -135,11 +135,11 @@
                 }
             });
 
-            // Function to update notification count and header text
             function updateNotificationCount() {
                 var notificationCount = $('#notifications-menu ul li').length;
                 $('#notification-count').text(notificationCount);
-                var headerText = notificationCount === 0 ? 'You have no notifications' : 'You have ' + notificationCount + ' notifications';
+                var headerText = notificationCount === 0 ? 'You have no notifications' : 'You have ' +
+                    notificationCount + ' notifications';
                 $('#notifications-menu .header').text(headerText);
             }
         });

@@ -101,15 +101,12 @@ class EventRegistrationController extends Controller
         ]);
     }
 
-
-    // EventRegistrationController.php
     public function formEventRegisterd()
     {
         $user = Auth::user();
         $role = $user->role;
         $userDetail = $user->userDetail;
 
-        // Trả về view mà không lấy dữ liệu sự kiện, vì AJAX sẽ lo phần này
         return view('user.event.get_event_registered', compact('user', 'role', 'userDetail'));
     }
 
